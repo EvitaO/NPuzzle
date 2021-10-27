@@ -1,13 +1,8 @@
 // Copyright 2021 <eovertoo>
 
-#include "Grid.hpp"
-#include <queue>
-#include <vector>
-#include <array>
+#include "Puzzle.hpp"
 
-
-int     main(void) {
-    Grid    start(3);
+int**   createPuzzle() {
     int ** arra = new int*[3];
     for (int i = 0; i < 3; i++)
         arra[i] = new int[3];
@@ -18,40 +13,64 @@ int     main(void) {
         for (int j = 0; j < 3; j++)
             arra[i][j] = bla[i][j];
     }
+    return arra;
+}
 
-    start.setPuzzle(arra);
-
-    int**   a = start.getPuzzle();
-
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++)
-            std::cout << a[i][j] << " ";
+bool    isgoal(Node current) {
+    int size = 3;
+    int goal[3][3] = {0};
+    int i = 0;
+    int j = 0;
+    int val = 1;
+    while (val < (size * size)) {
+        for (;j < size && goal[i][j] == 0 && val < (size * size); j++, val++)
+            goal[i][j] = val;
+        for (j--,i++; i < size && goal[i][j] == 0 && val < (size * size); val++, i++)
+            goal[i][j] = val;
+        for (j--, i--; j >= 0 && goal[i][j] == 0 && val < (size * size); val++, j--)
+            goal[i][j] = val;
+        for (i--, j++; i >= 0 && goal[i][j] == 0 && val < (size * size); val++, i--)
+            goal[i][j] = val;
+        i++;
+        j++;
+    }
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            std::cout << goal[i][j] << " ";
+        }
         std::cout << std::endl;
     }
+    return true;
+}
+
+int     main(void) {
+    Node    start(3);
+    
+    start.setPuzzle(createPuzzle());
+
+    isgoal(start);
+   
+    Puzzle  puzzle(3);
 
     xy cordinates = start.getEmptyPiece();
     std::cout << "cordinates zero piece, x = " << cordinates.x << " y = " << cordinates.y << std::endl << std::endl;
 
     int kids[4][2] = { {cordinates.x, cordinates.y + 1}, {cordinates.x, cordinates.y - 1}, {cordinates.x + 1, cordinates.y}, {cordinates.x - 1, cordinates.y} };
 
-    std::priority_queue<Grid, std::vector<Grid>, CompareF >  openlist;
-
     for(int i = 0; i < 4; i++){
         if (start.getChild(cordinates.x, cordinates.y, kids[i][0], kids[i][1]) != NULL) {
-            Grid tmp(3);
+            Node tmp(3);
             tmp.setPuzzle(start.getChild(cordinates.x, cordinates.y, kids[i][0], kids[i][1]));
-            openlist.push(tmp);
+            puzzle.getOpenList().push(tmp);            
         }
     }
 
-    while (!openlist.empty()) {
-        Grid tmp = openlist.top();
-        for (int i = 0; i < 3 ; i++) {
-            for (int j = 0; j < 3; j++)
-                std::cout << tmp.getPuzzle()[i][j] << " ";
-            std::cout << std::endl;
-        }
-        openlist.pop();
-        std::cout << std::endl;
+    while (!(puzzle.getOpenList().empty())) {
+        Node tmp = puzzle.getOpenList().top();
+        tmp.print();
+        puzzle.getClosedList().insert(tmp);
+        puzzle.getOpenList().pop();
     }
+
+    std::cout << puzzle.getClosedList().size() << std::endl;
 }

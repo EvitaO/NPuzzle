@@ -1,23 +1,23 @@
 // Copyright 2021 <eovertoo>
 
-#include "Grid.hpp"
+#include "Node.hpp"
 
-Grid::Grid() {}
+Node::Node() {}
 
-Grid::Grid(int s) {
+Node::Node(int s) {
     _size = s;
     _puzzle = new int*[_size];
     for (int i = 0; i < 3; i++)
         _puzzle[i] = new int[_size];
 }
 
-Grid::Grid(Grid const & src) {
+Node::Node(Node const & src) {
     *this = src;
 }
 
-Grid::~Grid() {}
+Node::~Node() {}
 
-Grid &  Grid::operator=(Grid const & src) {
+Node &  Node::operator=(Node const & src) {
     _f = src.getF();
     _g = src.getG();
     _h = src.getH();
@@ -33,19 +33,19 @@ Grid &  Grid::operator=(Grid const & src) {
     return *this;
 }
 
-int     Grid::getF() const {return _f;}
+int     Node::getF() const {return _f;}
 
-int     Grid::getG() const {return _g;}
+int     Node::getG() const {return _g;}
 
-int     Grid::getH() const {return _h;}
+int     Node::getH() const {return _h;}
 
-int     Grid::getSize() const {return _size;}
+int     Node::getSize() const {return _size;}
 
-Grid*   Grid::getParent() const {return _parent;}
+Node*   Node::getParent() const {return _parent;}
 
-int**   Grid::getPuzzle() const {return _puzzle;}
+int**   Node::getPuzzle() const {return _puzzle;}
 
-xy      Grid::getEmptyPiece() const {
+xy      Node::getEmptyPiece() const {
     xy cordinates;
     for (int i = 0; i < _size; i++) {
         for (int j = 0; j < _size; j++) {
@@ -58,7 +58,7 @@ xy      Grid::getEmptyPiece() const {
     return cordinates;
 }
 
-int**   Grid::getChild(int x, int y, int swapx, int swapy) {
+int**   Node::getChild(int x, int y, int swapx, int swapy) {
     int **arr;
 
     arr = new int*[_size];
@@ -77,11 +77,17 @@ int**   Grid::getChild(int x, int y, int swapx, int swapy) {
     return NULL;
 }
 
-void    Grid::setPuzzle(int** arr) {
+void    Node::setPuzzle(int** arr) {
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++)
             _puzzle[i][j] = arr[i][j];
     }
 }
 
-
+void    Node::print() {
+    for (int i = 0; i < _size ; i++) {
+        for (int j = 0; j < _size; j++)
+            std::cout << _puzzle[i][j] << " ";
+        std::cout << std::endl;
+    }
+}
