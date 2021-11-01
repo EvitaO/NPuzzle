@@ -6,34 +6,31 @@ Node::Node() {}
 
 Node::Node(int s) {
     _size = s;
-    _puzzle = new int*[_size];
-    for (int i = 0; i < 3; i++)
-        _puzzle[i] = new int[_size];
+    _g = 0;
+    _h = 0;
+    _puzzle.resize(_size, std::vector<int>(_size, 0));    
 }
 
 Node::Node(Node const & src) {
     *this = src;
 }
 
-Node::~Node() {}
+Node::~Node() {
+}
 
 Node &  Node::operator=(Node const & src) {
-    _f = src.getF();
+    //_f = src.getF();
     _g = src.getG();
     _h = src.getH();
     _size = src.getSize();
-
-    _puzzle = new int*[_size];
-    for (int i = 0; i < 3; i++)
-        _puzzle[i] = new int[_size];
-
+    
+    _puzzle.resize(_size, std::vector<int>(_size, 0));    
     _parent = src.getParent();
     _puzzle = src.getPuzzle();
-    //setPuzzle(src.getPuzzle());
     return *this;
 }
 
-int     Node::getF() const {return _f;}
+int     Node::getF() const {return _g + _h;}
 
 int     Node::getG() const {return _g;}
 
@@ -43,7 +40,7 @@ int     Node::getSize() const {return _size;}
 
 Node*   Node::getParent() const {return _parent;}
 
-int**   Node::getPuzzle() const {return _puzzle;}
+std::vector<std::vector<int> >   Node::getPuzzle() const {return _puzzle;}
 
 xy      Node::getEmptyPiece() const {
     xy cordinates;
@@ -58,30 +55,34 @@ xy      Node::getEmptyPiece() const {
     return cordinates;
 }
 
-int**   Node::getChild(int x, int y, int swapx, int swapy) {
-    int **arr;
-
-    arr = new int*[_size];
-    for (int i = 0; i < 3; i++)
-        arr[i] = new int[_size];
+std::vector<std::vector<int> >   Node::getChild(int x, int y, int swapx, int swapy) {
+    std::vector<std::vector<int> > arr(_size, std::vector<int>(_size, 0));
     
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++)
-            arr[i][j] = _puzzle[i][j];
-    }
     if (swapx >= 0 && swapx < _size && swapy >= 0 && swapy < _size) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++)
+                arr[i][j] = _puzzle[i][j];
+        }
         arr[y][x] = arr[swapy][swapx];
         arr[swapy][swapx] = 0;
         return arr;
     }
-    return NULL;
+    arr.resize(0, std::vector<int>(0));
+    return arr;
 }
 
-void    Node::setPuzzle(int** arr) {
+void    Node::setPuzzle(std::vector<std::vector<int> > arr) {
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++)
             _puzzle[i][j] = arr[i][j];
     }
+}
+
+void    Node::setH(int h) {_h = h;}
+
+void    Node::setParent(Node parent){
+    _parent = &parent;
+    _g = parent.getG() + 1;
 }
 
 void    Node::print() {

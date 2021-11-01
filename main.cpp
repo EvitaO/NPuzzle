@@ -2,75 +2,70 @@
 
 #include "Puzzle.hpp"
 
-int**   createPuzzle() {
-    int ** arra = new int*[3];
-    for (int i = 0; i < 3; i++)
-        arra[i] = new int[3];
+std::vector<std::vector<int> >   createPuzzle() {
+    std::vector<std::vector<int> > board(3, std::vector<int>(3, 0));
 
-    int bla[3][3] = { {2, 4, 8}, {5, 7, 1}, {3, 6, 0} };
+    int bla[3][3] = { {2, 0, 3}, {1, 6, 4}, {8, 7, 5} };
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++)
-            arra[i][j] = bla[i][j];
+            board[i][j] = bla[i][j];
     }
-    return arra;
+    return board;
 }
 
-bool    isgoal(Node current) {
-    int size = 3;
-    int goal[3][3] = {0};
-    int i = 0;
-    int j = 0;
-    int val = 1;
-    while (val < (size * size)) {
-        for (;j < size && goal[i][j] == 0 && val < (size * size); j++, val++)
-            goal[i][j] = val;
-        for (j--,i++; i < size && goal[i][j] == 0 && val < (size * size); val++, i++)
-            goal[i][j] = val;
-        for (j--, i--; j >= 0 && goal[i][j] == 0 && val < (size * size); val++, j--)
-            goal[i][j] = val;
-        for (i--, j++; i >= 0 && goal[i][j] == 0 && val < (size * size); val++, i--)
-            goal[i][j] = val;
-        i++;
-        j++;
-    }
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            std::cout << goal[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
-    return true;
-}
+/*
+1 2 3
+8 0 4
+7 6 5
+
+1 2 3
+0 6 4
+8 7 5
+
+ */
+// bool    isgoal(Node current) {
+//     int size = 3;
+//     std::vector<std::vector<int> > goal(3, std::vector<int>(3, 0));
+//     int i = 0;
+//     int j = 0;
+//     int val = 1;
+//     while (val < (size * size)) {
+//         for (;j < size && goal[i][j] == 0 && val < (size * size); j++, val++)
+//             goal[i][j] = val;
+//         for (j--,i++; i < size && goal[i][j] == 0 && val < (size * size); val++, i++)
+//             goal[i][j] = val;
+//         for (j--, i--; j >= 0 && goal[i][j] == 0 && val < (size * size); val++, j--)
+//             goal[i][j] = val;
+//         for (i--, j++; i >= 0 && goal[i][j] == 0 && val < (size * size); val++, i--)
+//             goal[i][j] = val;
+//         i++;
+//         j++;
+//     }
+//     if (current.getPuzzle() == goal)
+//         return true;
+//     return false;
+// }
 
 int     main(void) {
+
     Node    start(3);
     
     start.setPuzzle(createPuzzle());
+    start.print();
 
-    isgoal(start);
-   
     Puzzle  puzzle(3);
 
-    xy cordinates = start.getEmptyPiece();
-    std::cout << "cordinates zero piece, x = " << cordinates.x << " y = " << cordinates.y << std::endl << std::endl;
-
-    int kids[4][2] = { {cordinates.x, cordinates.y + 1}, {cordinates.x, cordinates.y - 1}, {cordinates.x + 1, cordinates.y}, {cordinates.x - 1, cordinates.y} };
-
-    for(int i = 0; i < 4; i++){
-        if (start.getChild(cordinates.x, cordinates.y, kids[i][0], kids[i][1]) != NULL) {
-            Node tmp(3);
-            tmp.setPuzzle(start.getChild(cordinates.x, cordinates.y, kids[i][0], kids[i][1]));
-            puzzle.getOpenList().push(tmp);            
-        }
-    }
-
+    puzzle.getOpenList().push(start);
     while (!(puzzle.getOpenList().empty())) {
         Node tmp = puzzle.getOpenList().top();
-        tmp.print();
-        puzzle.getClosedList().insert(tmp);
+        //tmp.print();
         puzzle.getOpenList().pop();
+        if (puzzle.getClosedList().find(tmp) == puzzle.getClosedList().end()){
+            if (puzzle.addToList(tmp))
+                break;
+        }
+        puzzle.getClosedList().insert(tmp);
+        
     }
-
-    std::cout << puzzle.getClosedList().size() << std::endl;
 }

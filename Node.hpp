@@ -4,6 +4,7 @@
 // Copyright 2021 <eovertoo>
 
 #include <iostream>
+#include <vector>
 
 struct        xy {
        int    x, y;
@@ -18,28 +19,30 @@ class Node{
       ~Node();
 
       Node &      operator=(Node const & src);
-      void        setPuzzle(int **arr);
-
+      void        setPuzzle(std::vector<std::vector<int> >);
+      void        setParent(Node parent);
+      void        setH(int h);
+      
       int         getF() const;
       int         getG() const;
       int         getH() const;
       int         getSize() const;
       Node*       getParent() const;
-      int**       getPuzzle() const;
+      std::vector<std::vector<int> >       getPuzzle() const;
       xy          getEmptyPiece() const;
-      int**       getChild(int x, int y, int swapx, int swapy);
+      std::vector<std::vector<int> >       getChild(int x, int y, int swapx, int swapy);
 
       void        print();
           
  private:
        Node();
-       int     _f;
+     //   int     _f;
        int     _g;
        int     _h;
        int     _size;
 
        Node    *_parent;
-       int     **_puzzle;
+       std::vector<std::vector<int> > _puzzle;
 };
 
 #endif  // NODE_HPP_

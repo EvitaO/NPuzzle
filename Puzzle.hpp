@@ -6,7 +6,6 @@
 #include "Node.hpp"
 #include <set>
 #include <queue>
-#include <vector>
 
 struct        CompareF {
        bool    operator()(Node const & a, Node const & b) {return a.getF() < b.getF();}
@@ -24,10 +23,16 @@ class Puzzle {
 
         Puzzle &    operator=(Puzzle const & src);
 
+        std::vector<std::vector<int> >  getGoal() const;
+
+        bool        addToList(Node src);
+        void        setGoal();
+        void        calculateManhattan(Node n);
+
         std::set<Node, ComparePuzzle>&    getClosedList();
         std::priority_queue<Node, std::vector<Node>, CompareF >&     getOpenList();
 
-        void        insert();
+        // void        insert();
 
     private:
 
@@ -36,6 +41,7 @@ class Puzzle {
         int _size;
         std::priority_queue<Node, std::vector<Node>, CompareF >  _openlist;
         std::set<Node, ComparePuzzle>  _closedlist;
+        std::vector<std::vector<int> > _goalState;
 };
 
 
