@@ -3,12 +3,14 @@
 #include "Puzzle.hpp"
 
 std::vector<std::vector<int> >   createPuzzle() {
-    std::vector<std::vector<int> > board(3, std::vector<int>(3, 0));
+    std::vector<std::vector<int> > board(4, std::vector<int>(4, 0));
 
-    int bla[3][3] = { {2, 0, 3}, {1, 6, 4}, {8, 7, 5} };
+    int bla[4][4] = { {15, 0, 1, 6}, {12, 3, 10, 9}, {11, 7, 14, 13}, {5, 4, 2, 8} };
+    // int bla[5][5] = { {6, 1, 3, 17, 19}, {8, 11, 23, 0, 24}, {12, 10, 2, 5, 9}, {20, 13, 15, 18, 22}, {4, 7, 16, 14, 21} };
+    // int bla[3][3] = { {8, 5, 2}, {4, 6, 1}, {0, 7, 3} };
 
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++)
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++)
             board[i][j] = bla[i][j];
     }
     return board;
@@ -49,23 +51,25 @@ std::vector<std::vector<int> >   createPuzzle() {
 
 int     main(void) {
 
-    Node    start(3);
-    
+    Node    start(4);
+    int i = 0;
     start.setPuzzle(createPuzzle());
     start.print();
 
-    Puzzle  puzzle(3);
+    Puzzle  puzzle(4);
 
     puzzle.getOpenList().push(start);
-    while (!(puzzle.getOpenList().empty())) {
+    while (!(puzzle.getOpenList().empty()) && i < 50000) {
         Node tmp = puzzle.getOpenList().top();
-        //tmp.print();
-        puzzle.getOpenList().pop();
-        if (puzzle.getClosedList().find(tmp) == puzzle.getClosedList().end()){
-            if (puzzle.addToList(tmp))
-                break;
+        if (tmp.getH() == 0 && tmp.getG() != 0){
+            return 0;
         }
-        puzzle.getClosedList().insert(tmp);
-        
+        // tmp.print();
+        // std::cout <<  tmp.getF() << std::endl;
+        puzzle.getOpenList().pop();
+        //puzzle.getClosedList().insert(tmp);
+        // std::cout << puzzle.getClosedList().size() << std::endl;
+        puzzle.addToList(tmp);
+        // i++;
     }
 }

@@ -30,7 +30,7 @@ Node &  Node::operator=(Node const & src) {
     return *this;
 }
 
-int     Node::getF() const {return _g + _h;}
+int     Node::getF() const {return (_g + _h);}
 
 int     Node::getG() const {return _g;}
 
@@ -59,8 +59,8 @@ std::vector<std::vector<int> >   Node::getChild(int x, int y, int swapx, int swa
     std::vector<std::vector<int> > arr(_size, std::vector<int>(_size, 0));
     
     if (swapx >= 0 && swapx < _size && swapy >= 0 && swapy < _size) {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++)
+        for (int i = 0; i < _size; i++) {
+            for (int j = 0; j < _size; j++)
                 arr[i][j] = _puzzle[i][j];
         }
         arr[y][x] = arr[swapy][swapx];
@@ -72,8 +72,8 @@ std::vector<std::vector<int> >   Node::getChild(int x, int y, int swapx, int swa
 }
 
 void    Node::setPuzzle(std::vector<std::vector<int> > arr) {
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++)
+    for (int i = 0; i < _size; i++) {
+        for (int j = 0; j < _size; j++)
             _puzzle[i][j] = arr[i][j];
     }
 }

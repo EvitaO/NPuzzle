@@ -8,7 +8,7 @@
 #include <queue>
 
 struct        CompareF {
-       bool    operator()(Node const & a, Node const & b) {return a.getF() < b.getF();}
+       bool    operator()(Node const & a, Node const & b) {return a.getF() > b.getF();}
 };
 
 struct        ComparePuzzle {
@@ -27,7 +27,7 @@ class Puzzle {
 
         bool        addToList(Node src);
         void        setGoal();
-        void        calculateManhattan(Node n);
+        void        calculateManhattan(Node *n);
 
         std::set<Node, ComparePuzzle>&    getClosedList();
         std::priority_queue<Node, std::vector<Node>, CompareF >&     getOpenList();

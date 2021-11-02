@@ -26,35 +26,47 @@ Puzzle &    Puzzle::operator=(Puzzle const & src) {
 bool        Puzzle::addToList(Node src) {
     xy coordinates = src.getEmptyPiece();
     int kids[4][2] = { {coordinates.x, coordinates.y + 1}, {coordinates.x, coordinates.y - 1}, {coordinates.x + 1, coordinates.y}, {coordinates.x - 1, coordinates.y} }; 
-
+    std::set<Node>::iterator bla;
     for(int i = 0; i < 4; i++){
         if ((src.getChild(coordinates.x, coordinates.y, kids[i][0], kids[i][1])).size() != 0) {
-            Node tmp(3);
+            Node tmp(src.getSize());
             tmp.setPuzzle(src.getChild(coordinates.x, coordinates.y, kids[i][0], kids[i][1]));
-            if (_closedlist.find(tmp) == _closedlist.end()) {
-                // tmp.print();
-                calculateManhattan(tmp);
+            
+            // src.print();
+            
+            bla = _closedlist.find(tmp);
+
+            //mayb makes it better or worser, not sure yet
+            
+            // if (bla != _closedlist.end()) 
+            // {
+            //     if ((*bla).getF() <= tmp.getF());
+            //     else {
+            //         _closedlist.erase(bla);
+            //         calculateManhattan(&tmp);
+            //         tmp.setParent(src);
+            //         _openlist.push(tmp);
+            //         _closedlist.insert(tmp);
+            //     }
+            // }
+            // else{
+            if (bla == _closedlist.end()){
+                calculateManhattan(&tmp);
                 tmp.setParent(src);
                 _openlist.push(tmp);
+                _closedlist.insert(tmp);
             }
+            
             if (tmp.getPuzzle() == getGoal()){
                 tmp.print();
                 return true;
-            }
-            // else{
-            //     calculateManhattan(tmp);
-            //     auto tmp2 = _closedlist.find(tmp);
-            //     if (tmp.getF() < tmp2->second){
-            //         _openlist.push(tmp);
-            //         _closedlist.erase(tmp2);
-            //     }
-            // }         
+            }        
         }
     }
     return false;
 }
 
-void        Puzzle::calculateManhattan(Node n) {
+void        Puzzle::calculateManhattan(Node *n) {
     int h = 0;
     int f = 0;
     for (int i = 0; i < _size; i++) {
@@ -63,7 +75,7 @@ void        Puzzle::calculateManhattan(Node n) {
             f = 0;
             for(int k = 0; k < _size && f == 0; k++){
                 for (int l = 0; l < _size; l++){
-                    if (n.getPuzzle()[i][j] == _goalState[k][l] && n.getPuzzle()[i][j] != 0){
+                    if (n->getPuzzle()[i][j] == _goalState[k][l] && n->getPuzzle()[i][j] != 0){
                         h += (i >= k) ? (i - k) : (k - i);
                         h += (j >= l) ? (j - l) : (l - j);
                         f = 1;
@@ -73,7 +85,7 @@ void        Puzzle::calculateManhattan(Node n) {
             }
         }
     }
-    n.setH(h);
+    n->setH(h);
 }
 
 std::vector<std::vector<int> >  Puzzle::getGoal() const {return _goalState;}
