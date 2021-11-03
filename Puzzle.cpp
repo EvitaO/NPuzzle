@@ -28,31 +28,29 @@ bool        Puzzle::addToList(Node src) {
     int kids[4][2] = { {coordinates.x, coordinates.y + 1}, {coordinates.x, coordinates.y - 1}, {coordinates.x + 1, coordinates.y}, {coordinates.x - 1, coordinates.y} }; 
     std::set<Node>::iterator bla;
     for(int i = 0; i < 4; i++){
-        if ((src.getChild(coordinates.x, coordinates.y, kids[i][0], kids[i][1])).size() != 0) {
+        if (src.getParent() != NULL && kids[i][0] != src.getParent()->getEmptyPiece().x && kids[i][1] != src.getParent()->getEmptyPiece().y);
+        else if (kids[i][0] >= 0 && kids[i][0] < _size && kids[i][1] >= 0 && kids[i][1] < _size) {
             Node tmp(src.getSize());
             tmp.setPuzzle(src.getChild(coordinates.x, coordinates.y, kids[i][0], kids[i][1]));
-            
-            // src.print();
-            
             bla = _closedlist.find(tmp);
 
             //mayb makes it better or worser, not sure yet
             
-            // if (bla != _closedlist.end()) 
-            // {
-            //     if ((*bla).getF() <= tmp.getF());
-            //     else {
-            //         _closedlist.erase(bla);
-            //         calculateManhattan(&tmp);
-            //         tmp.setParent(src);
-            //         _openlist.push(tmp);
-            //         _closedlist.insert(tmp);
-            //     }
-            // }
-            // else{
-            if (bla == _closedlist.end()){
+            if (bla != _closedlist.end()) 
+            {
+                if ((*bla).getF() <= tmp.getF());
+                else {
+                    _closedlist.erase(bla);
+                    calculateManhattan(&tmp);
+                    tmp.setParent(&src);
+                    _openlist.push(tmp);
+                    _closedlist.insert(tmp);
+                }
+            }
+            else{
+            // if (bla == _closedlist.end()){
                 calculateManhattan(&tmp);
-                tmp.setParent(src);
+                tmp.setParent(&src);
                 _openlist.push(tmp);
                 _closedlist.insert(tmp);
             }
@@ -60,7 +58,7 @@ bool        Puzzle::addToList(Node src) {
             if (tmp.getPuzzle() == getGoal()){
                 tmp.print();
                 return true;
-            }        
+            }   
         }
     }
     return false;

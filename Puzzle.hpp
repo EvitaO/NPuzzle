@@ -8,7 +8,13 @@
 #include <queue>
 
 struct        CompareF {
-       bool    operator()(Node const & a, Node const & b) {return a.getF() > b.getF();}
+        bool    operator()(Node const & a, Node const & b) {
+            // if (a.getPuzzle() == b.getPuzzle() && a.getF() >= b.getF())
+            //     return true;
+            if (a.getF() == b.getF())
+                return a.getH() > b.getH();
+            return a.getF() > b.getF();
+        }
 };
 
 struct        ComparePuzzle {

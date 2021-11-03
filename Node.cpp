@@ -8,7 +8,8 @@ Node::Node(int s) {
     _size = s;
     _g = 0;
     _h = 0;
-    _puzzle.resize(_size, std::vector<int>(_size, 0));    
+    _puzzle.resize(_size, std::vector<int>(_size, 0));
+    _parent = NULL;    
 }
 
 Node::Node(Node const & src) {
@@ -58,16 +59,12 @@ xy      Node::getEmptyPiece() const {
 std::vector<std::vector<int> >   Node::getChild(int x, int y, int swapx, int swapy) {
     std::vector<std::vector<int> > arr(_size, std::vector<int>(_size, 0));
     
-    if (swapx >= 0 && swapx < _size && swapy >= 0 && swapy < _size) {
-        for (int i = 0; i < _size; i++) {
-            for (int j = 0; j < _size; j++)
-                arr[i][j] = _puzzle[i][j];
-        }
-        arr[y][x] = arr[swapy][swapx];
-        arr[swapy][swapx] = 0;
-        return arr;
+    for (int i = 0; i < _size; i++) {
+        for (int j = 0; j < _size; j++)
+            arr[i][j] = _puzzle[i][j];
     }
-    arr.resize(0, std::vector<int>(0));
+    arr[y][x] = arr[swapy][swapx];
+    arr[swapy][swapx] = 0;
     return arr;
 }
 
@@ -80,9 +77,9 @@ void    Node::setPuzzle(std::vector<std::vector<int> > arr) {
 
 void    Node::setH(int h) {_h = h;}
 
-void    Node::setParent(Node parent){
-    _parent = &parent;
-    _g = parent.getG() + 1;
+void    Node::setParent(Node *parent){
+    _parent = parent;
+    _g = parent->getG() + 1;
 }
 
 void    Node::print() {
