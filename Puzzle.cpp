@@ -23,48 +23,51 @@ Puzzle &    Puzzle::operator=(Puzzle const & src) {
     return *this;
 }
 
-bool        Puzzle::addToList(Node src) {
+bool        Puzzle::addToList(Node &src) {
     xy coordinates = src.getEmptyPiece();
     int kids[4][2] = { {coordinates.x, coordinates.y + 1}, {coordinates.x, coordinates.y - 1}, {coordinates.x + 1, coordinates.y}, {coordinates.x - 1, coordinates.y} }; 
-    std::set<Node>::iterator bla;
+    std::set<Node*>::iterator bla;
+
     for(int i = 0; i < 4; i++){
-        if (src.getParent() != NULL && kids[i][0] != src.getParent()->getEmptyPiece().x && kids[i][1] != src.getParent()->getEmptyPiece().y);
-        else if (kids[i][0] >= 0 && kids[i][0] < _size && kids[i][1] >= 0 && kids[i][1] < _size) {
-            Node tmp(src.getSize());
-            tmp.setPuzzle(src.getChild(coordinates.x, coordinates.y, kids[i][0], kids[i][1]));
+        
+        // if (src.getParent() != NULL && kids[i][0] != src.getParent()->getEmptyPiece().x && kids[i][1] != src.getParent()->getEmptyPiece().y);
+        if (kids[i][0] >= 0 && kids[i][0] < _size && kids[i][1] >= 0 && kids[i][1] < _size) {
+            if (src.getParent() != NULL && src.getParent()->getPuzzle() == src.getChild(coordinates.x, coordinates.y, kids[i][0], kids[i][1]));
+                // std::cout << "aa\n";
+            // std::cout << &src << std::endl;
+            else{
+            Node *tmp = new Node(src.getSize());
+            tmp->setPuzzle(src.getChild(coordinates.x, coordinates.y, kids[i][0], kids[i][1]));
             bla = _closedlist.find(tmp);
 
             //mayb makes it better or worser, not sure yet
-            
+            // std::cout << &tmp << std::endl;
+            // std::cout << &src << std::endl;
             if (bla != _closedlist.end()) 
             {
-                if ((*bla).getF() <= tmp.getF());
+                if ((*bla)->getF() <= tmp->getF());
                 else {
                     _closedlist.erase(bla);
-                    calculateManhattan(&tmp);
-                    tmp.setParent(&src);
+                    calculateManhattan(*tmp);
+                    tmp->setParent(src);
                     _openlist.push(tmp);
                     _closedlist.insert(tmp);
                 }
             }
             else{
             // if (bla == _closedlist.end()){
-                calculateManhattan(&tmp);
-                tmp.setParent(&src);
+                calculateManhattan(*tmp);
+                tmp->setParent(src);
                 _openlist.push(tmp);
                 _closedlist.insert(tmp);
             }
-            
-            if (tmp.getPuzzle() == getGoal()){
-                tmp.print();
-                return true;
-            }   
+            } 
         }
     }
     return false;
 }
 
-void        Puzzle::calculateManhattan(Node *n) {
+void        Puzzle::calculateManhattan(Node &n) {
     int h = 0;
     int f = 0;
     for (int i = 0; i < _size; i++) {
@@ -73,7 +76,7 @@ void        Puzzle::calculateManhattan(Node *n) {
             f = 0;
             for(int k = 0; k < _size && f == 0; k++){
                 for (int l = 0; l < _size; l++){
-                    if (n->getPuzzle()[i][j] == _goalState[k][l] && n->getPuzzle()[i][j] != 0){
+                    if (n.getPuzzle()[i][j] == _goalState[k][l] && n.getPuzzle()[i][j] != 0){
                         h += (i >= k) ? (i - k) : (k - i);
                         h += (j >= l) ? (j - l) : (l - j);
                         f = 1;
@@ -83,7 +86,7 @@ void        Puzzle::calculateManhattan(Node *n) {
             }
         }
     }
-    n->setH(h);
+    n.setH(h);
 }
 
 std::vector<std::vector<int> >  Puzzle::getGoal() const {return _goalState;}
@@ -106,10 +109,10 @@ void    Puzzle::setGoal(){
     }
 }
 
-std::set<Node, ComparePuzzle>&    Puzzle::getClosedList() {
+std::set<Node*, ComparePuzzle>&    Puzzle::getClosedList() {
     return _closedlist;
 }
 
-std::priority_queue<Node, std::vector<Node>, CompareF >&     Puzzle::getOpenList() {
+std::priority_queue<Node*, std::vector<Node*>, CompareF >&     Puzzle::getOpenList() {
     return _openlist;
 }

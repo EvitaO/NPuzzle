@@ -8,17 +8,17 @@
 #include <queue>
 
 struct        CompareF {
-        bool    operator()(Node const & a, Node const & b) {
+        bool    operator()(Node const *a, Node const *b) {
             // if (a.getPuzzle() == b.getPuzzle() && a.getF() >= b.getF())
             //     return true;
-            if (a.getF() == b.getF())
-                return a.getH() > b.getH();
-            return a.getF() > b.getF();
+            // if (a->getF() == b->getF())
+            //     return a->getH() > b->getH();
+            return a->getF() > b->getF();
         }
 };
 
 struct        ComparePuzzle {
-       bool    operator()(Node const & a, Node const & b) {return a.getPuzzle() != b.getPuzzle();}
+       bool    operator()(Node const *a, Node const *b) {return a->getPuzzle() != b->getPuzzle();}
 };
 
 class Puzzle {
@@ -31,12 +31,12 @@ class Puzzle {
 
         std::vector<std::vector<int> >  getGoal() const;
 
-        bool        addToList(Node src);
+        bool        addToList(Node &src);
         void        setGoal();
-        void        calculateManhattan(Node *n);
+        void        calculateManhattan(Node &n);
 
-        std::set<Node, ComparePuzzle>&    getClosedList();
-        std::priority_queue<Node, std::vector<Node>, CompareF >&     getOpenList();
+        std::set<Node*, ComparePuzzle>&    getClosedList();
+        std::priority_queue<Node*, std::vector<Node*>, CompareF >&     getOpenList();
 
         // void        insert();
 
@@ -45,8 +45,8 @@ class Puzzle {
         Puzzle();
 
         int _size;
-        std::priority_queue<Node, std::vector<Node>, CompareF >  _openlist;
-        std::set<Node, ComparePuzzle>  _closedlist;
+        std::priority_queue<Node*, std::vector<Node*>, CompareF >  _openlist;
+        std::set<Node*, ComparePuzzle>  _closedlist;
         std::vector<std::vector<int> > _goalState;
 };
 

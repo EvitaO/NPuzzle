@@ -21,7 +21,7 @@ class Node{
 
       Node &      operator=(Node const & src);
       void        setPuzzle(std::vector<std::vector<int> >);
-      void        setParent(Node *parent);
+      void        setParent(Node &parent);
       void        setH(int h);
       
       int         getF() const;

@@ -24,9 +24,11 @@ Node &  Node::operator=(Node const & src) {
     _g = src.getG();
     _h = src.getH();
     _size = src.getSize();
+    std::cout << &src << std::endl;
     
     _puzzle.resize(_size, std::vector<int>(_size, 0));    
     _parent = src.getParent();
+    std::cout << &_parent << std::endl;
     _puzzle = src.getPuzzle();
     return *this;
 }
@@ -77,9 +79,9 @@ void    Node::setPuzzle(std::vector<std::vector<int> > arr) {
 
 void    Node::setH(int h) {_h = h;}
 
-void    Node::setParent(Node *parent){
-    _parent = parent;
-    _g = parent->getG() + 1;
+void    Node::setParent(Node &parent){
+    _parent = &parent;
+    _g = parent.getG() + 1;
 }
 
 void    Node::print() {
