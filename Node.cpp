@@ -24,11 +24,11 @@ Node &  Node::operator=(Node const & src) {
     _g = src.getG();
     _h = src.getH();
     _size = src.getSize();
-    std::cout << &src << std::endl;
+    // std::cout << &src << std::endl;
     
     _puzzle.resize(_size, std::vector<int>(_size, 0));    
     _parent = src.getParent();
-    std::cout << &_parent << std::endl;
+    // std::cout << &_parent << std::endl;
     _puzzle = src.getPuzzle();
     return *this;
 }
@@ -46,34 +46,27 @@ Node*   Node::getParent() const {return _parent;}
 std::vector<std::vector<int> >   Node::getPuzzle() const {return _puzzle;}
 
 xy      Node::getEmptyPiece() const {
-    xy cordinates;
-    for (int i = 0; i < _size; i++) {
-        for (int j = 0; j < _size; j++) {
-            if (_puzzle[i][j] == 0) {
-                cordinates.x = j;
-                cordinates.y = i;
-            }
-        }
-    }
-    return cordinates;
+    return _coordinates;
 }
 
-std::vector<std::vector<int> >   Node::getChild(int x, int y, int swapx, int swapy) {
-    std::vector<std::vector<int> > arr(_size, std::vector<int>(_size, 0));
+void   Node::getChild(Node & src, int swapx, int swapy) {
+    // std::vector<std::vector<int> > arr(_size, std::vector<int>(_size, 0));
     
-    for (int i = 0; i < _size; i++) {
-        for (int j = 0; j < _size; j++)
-            arr[i][j] = _puzzle[i][j];
-    }
-    arr[y][x] = arr[swapy][swapx];
-    arr[swapy][swapx] = 0;
-    return arr;
+    xy coordinates = src.getEmptyPiece();
+    _puzzle = src.getPuzzle();
+    _puzzle[coordinates.y][coordinates.x] = _puzzle[swapy][swapx];
+    _puzzle[swapy][swapx] = 0;
+    _coordinates.x = swapx;
+    _coordinates.y = swapy;
+    // return arr;
 }
 
 void    Node::setPuzzle(std::vector<std::vector<int> > arr) {
     for (int i = 0; i < _size; i++) {
-        for (int j = 0; j < _size; j++)
+        for (int j = 0; j < _size; j++){
             _puzzle[i][j] = arr[i][j];
+            if (_puzzle[i][j] == 0) {_coordinates.x = j; _coordinates.y = i;}
+        }
     }
 }
 

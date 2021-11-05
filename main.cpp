@@ -1,6 +1,7 @@
 // Copyright 2021 <eovertoo>
 
 #include "Puzzle.hpp"
+#include <thread>
 
 // void    print(Node &tmp);
 
@@ -31,39 +32,18 @@ int     main(void) {
     Node    *start = new Node(4);
     int i = 0;
     start->setPuzzle(createPuzzle());
-    start->print();
-
     Puzzle  puzzle(4);
 
     puzzle.getOpenList().push(start);
-    while (!(puzzle.getOpenList().empty()) && i < 2) {
+    while (!(puzzle.getOpenList().empty()) && i < 5) {
         Node *tmp = puzzle.getOpenList().top();
-        // std::cout << "new src = :\n";
-        // tmp->print();
         if (tmp->getH() == 0 && tmp->getG() != 0){
             print(*tmp, 0);
             return 0;
         }
-        // tmp->print();
-        // std::cout << &tmp << std::endl;
-        // std::cout << "aaa\n";
-        // std::cout << &(puzzle.getOpenList().top()) << std::endl;
-        // tmp->print();
-        // std::cout <<  tmp->getH() << "   " << tmp->getG() << "    " << tmp->getF() << std::endl;
-        // std::cout << puzzle.getOpenList().size() << std::endl;
         puzzle.getOpenList().pop();
-        // std::cout << puzzle.getOpenList().size() << std::endl;
-        // puzzle.getOpenList().top()->print();
         puzzle.getClosedList().insert(tmp);
-        // std::cout << puzzle.getClosedList().size() << std::endl;
-        puzzle.addToList(*tmp);
-        // std::cout << ";lal  " << puzzle.getOpenList().size() << std::endl;
-        // std::cout << ";lal2  " << puzzle.getClosedList().size() << std::endl;
-
+        puzzle.test(tmp);
         // i++;
     }
-    // while (!(puzzle.getOpenList().empty())) {
-    //     puzzle.getOpenList().top()->print();
-    //     puzzle.getOpenList().pop();
-    // }
 }

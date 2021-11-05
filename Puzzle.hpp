@@ -6,6 +6,10 @@
 #include "Node.hpp"
 #include <set>
 #include <queue>
+#include <unordered_map>
+#include <map>
+#include <cstdlib>
+#include <thread>
 
 struct        CompareF {
         bool    operator()(Node const *a, Node const *b) {
@@ -31,10 +35,11 @@ class Puzzle {
 
         std::vector<std::vector<int> >  getGoal() const;
 
-        bool        addToList(Node &src);
+        void        addToList(Node &src, int newx, int newy);
         void        setGoal();
         void        calculateManhattan(Node &n);
-
+        void        test(Node *src);
+        std::thread callthread(Node &src, int x, int y);
         std::set<Node*, ComparePuzzle>&    getClosedList();
         std::priority_queue<Node*, std::vector<Node*>, CompareF >&     getOpenList();
 
@@ -48,6 +53,7 @@ class Puzzle {
         std::priority_queue<Node*, std::vector<Node*>, CompareF >  _openlist;
         std::set<Node*, ComparePuzzle>  _closedlist;
         std::vector<std::vector<int> > _goalState;
+        std::unordered_map<int, std::pair<int, int> > _mapGoal;
 };
 
 

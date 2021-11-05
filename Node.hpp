@@ -31,7 +31,7 @@ class Node{
       Node*       getParent() const;
       std::vector<std::vector<int> >       getPuzzle() const;
       xy          getEmptyPiece() const;
-      std::vector<std::vector<int> >       getChild(int x, int y, int swapx, int swapy);
+      void        getChild(Node &src, int swapx, int swapy);
 
       void        print();
           
@@ -44,6 +44,7 @@ class Node{
 
        Node    *_parent;
        std::vector<std::vector<int> > _puzzle;
+       xy     _coordinates;
 };
 
 #endif  // NODE_HPP_
