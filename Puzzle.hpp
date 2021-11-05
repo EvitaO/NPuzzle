@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <map>
 #include <cstdlib>
-#include <thread>
+
 
 struct        CompareF {
         bool    operator()(Node const *a, Node const *b) {
@@ -35,15 +35,13 @@ class Puzzle {
 
         std::vector<std::vector<int> >  getGoal() const;
 
-        void        addToList(Node &src, int newx, int newy);
+        void        addToList(Node &src);
         void        setGoal();
         void        calculateManhattan(Node &n);
         void        test(Node *src);
-        std::thread callthread(Node &src, int x, int y);
         std::set<Node*, ComparePuzzle>&    getClosedList();
         std::priority_queue<Node*, std::vector<Node*>, CompareF >&     getOpenList();
 
-        // void        insert();
 
     private:
 
