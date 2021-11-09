@@ -6,9 +6,10 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <cmath>
 
 struct        xy {
-       int    x, y;
+       int    x, y, i;
 };
 
 
@@ -20,7 +21,7 @@ class Node{
       ~Node();
 
       Node &      operator=(Node const & src);
-      void        setPuzzle(std::vector<std::vector<int> >);
+      void        setPuzzle(std::vector<int>);
       void        setParent(Node &parent);
       void        setH(int h);
       
@@ -29,9 +30,9 @@ class Node{
       int         getH() const;
       int         getSize() const;
       Node*       getParent() const;
-      std::vector<std::vector<int> >       getPuzzle() const;
+      std::vector<int>       getPuzzle() const;
       xy          getEmptyPiece() const;
-      void        getChild(Node &src, int swapx, int swapy);
+      void        getChild(Node &src, int swapi);
 
       void        print();
           
@@ -43,7 +44,7 @@ class Node{
        int     _size;
 
        Node    *_parent;
-       std::vector<std::vector<int> > _puzzle;
+       std::vector<int> _puzzle;
        xy     _coordinates;
 };
 

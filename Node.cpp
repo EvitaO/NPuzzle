@@ -8,7 +8,7 @@ Node::Node(int s) {
     _size = s;
     _g = 0;
     _h = 0;
-    _puzzle.resize(_size, std::vector<int>(_size, 0));
+    _puzzle.resize(_size, 0);
     _parent = NULL;    
 }
 
@@ -26,7 +26,7 @@ Node &  Node::operator=(Node const & src) {
     _size = src.getSize();
     // std::cout << &src << std::endl;
     
-    _puzzle.resize(_size, std::vector<int>(_size, 0));    
+    _puzzle.resize(_size, 0);    
     _parent = src.getParent();
     // std::cout << &_parent << std::endl;
     _puzzle = src.getPuzzle();
@@ -43,30 +43,31 @@ int     Node::getSize() const {return _size;}
 
 Node*   Node::getParent() const {return _parent;}
 
-std::vector<std::vector<int> >   Node::getPuzzle() const {return _puzzle;}
+std::vector<int>   Node::getPuzzle() const {return _puzzle;}
 
 xy      Node::getEmptyPiece() const {
     return _coordinates;
 }
 
-void   Node::getChild(Node & src, int swapx, int swapy) {
+void   Node::getChild(Node & src, int swapi) {
     // std::vector<std::vector<int> > arr(_size, std::vector<int>(_size, 0));
     
     xy coordinates = src.getEmptyPiece();
     _puzzle = src.getPuzzle();
-    _puzzle[coordinates.y][coordinates.x] = _puzzle[swapy][swapx];
-    _puzzle[swapy][swapx] = 0;
-    _coordinates.x = swapx;
-    _coordinates.y = swapy;
+    _puzzle[coordinates.i] = _puzzle[swapi];
+    _puzzle[swapi] = 0;
+    _coordinates.x = swapi % static_cast<int>(sqrt(_size));
+    _coordinates.y = swapi / static_cast<int>(sqrt(_size));
+    _coordinates.i = swapi;
     // return arr;
 }
 
-void    Node::setPuzzle(std::vector<std::vector<int> > arr) {
+void    Node::setPuzzle(std::vector<int> arr) {
     for (int i = 0; i < _size; i++) {
-        for (int j = 0; j < _size; j++){
-            _puzzle[i][j] = arr[i][j];
-            if (_puzzle[i][j] == 0) {_coordinates.x = j; _coordinates.y = i;}
-        }
+        // for (int j = 0; j < _size; j++){
+            _puzzle[i] = arr[i];
+            if (_puzzle[i] == 0) {_coordinates.x = i % static_cast<int>(sqrt(_size)); _coordinates.y = i / static_cast<int>(sqrt(_size)); _coordinates.i = i;}
+        // }
     }
 }
 
@@ -79,8 +80,9 @@ void    Node::setParent(Node &parent){
 
 void    Node::print() {
     for (int i = 0; i < _size ; i++) {
-        for (int j = 0; j < _size; j++)
-            std::cout << _puzzle[i][j] << " ";
-        std::cout << std::endl;
+        if (i % static_cast<int>(sqrt(_size)) == 0 && i != 0)
+            std::cout << std::endl;
+        std::cout << _puzzle[i] << " ";
     }
+    std::cout << std::endl;
 }

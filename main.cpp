@@ -5,18 +5,18 @@
 
 // void    print(Node &tmp);
 
-std::vector<std::vector<int> >   createPuzzle() {
-    std::vector<std::vector<int> > board(3, std::vector<int>(3, 0));
+std::vector<int>   createPuzzle() {
+    std::vector<int> board(9, 0);
 
-    // int bla[4][4] = { {6, 5, 11, 8}, {15, 10, 2, 14}, {4, 0, 1, 3}, {13, 7, 9, 12} };
+    // int bla[16] = { 6, 5, 11, 8, 15, 10, 2, 14, 4, 0, 1, 3, 13, 7, 9, 12 };
     // int bla[4][4] = { {15, 0, 1, 6}, {12, 3, 10, 9}, {11, 7, 14, 13}, {5, 4, 2, 8} };
     // int bla[5][5] = { {6, 1, 3, 17, 19}, {8, 11, 23, 0, 24}, {12, 10, 2, 5, 9}, {20, 13, 15, 18, 22}, {4, 7, 16, 14, 21} };
     // int bla[3][3] = { {1, 2, 3}, {0, 6, 4}, {8, 7, 5} };
-    int bla[3][3] = { {8, 7, 3}, {6, 1, 5}, {0, 2, 4} };
+    int bla[9] = { 8, 7, 3, 6, 1, 5, 0, 2, 4 };
 
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++)
-            board[i][j] = bla[i][j];
+    for (int i = 0; i < 9; i++) {
+        // for (int j = 0; j < 3; j++)
+            board[i] = bla[i];
     }
     return board;
 }
@@ -30,27 +30,29 @@ void    print(Node &tmp, int moves){
 
 int     main(void) {
 
-    Node    *start = new Node(3);
+    Node    *start = new Node(9);
     int i = 0;
     start->setPuzzle(createPuzzle());
-    Puzzle  puzzle(3);
+    Puzzle  puzzle(9);
 
     puzzle.getOpenList().push(start);
-    while (!(puzzle.getOpenList().empty()) && i < 5000) {
+    puzzle.getClosedList().insert(start->getPuzzle());
+    while (!(puzzle.getOpenList().empty()) && i < 1984) {
         Node *tmp = puzzle.getOpenList().top();
+        // tmp->print();
+        // std::cout << "\nF:  " << tmp->getF() << "\n" ;
+        // std::cout << "\nG:  " << tmp->getG() << "\n" ;
+        // std::cout << "\nH:  " << tmp->getH() << "\n" ;
         if (tmp->getH() == 0 && tmp->getG() != 0){
             print(*tmp, 0);
+            std::cout << puzzle.getOpenList().size() << std::endl;
+            std::cout << puzzle.getClosedList().size() << std::endl;
+             std::cout << i << std::endl;
+
             return 0;
         }
         puzzle.getOpenList().pop();
-        puzzle.getClosedList().insert(tmp);
         puzzle.addToList(*tmp);
         // i++;
     }
-    // while (!(puzzle.getOpenList().empty()) && i < 5005){
-    //     puzzle.getOpenList().top()->print();
-    //     std::cout << "----------------\n";
-    //     puzzle.getOpenList().pop();
-    //     i++;
-    // }
 }
