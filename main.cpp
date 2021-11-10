@@ -12,7 +12,9 @@ std::vector<int>&   createPuzzle(std::vector<int> &board) {
     // int bla[5][5] = { {6, 1, 3, 17, 19}, {8, 11, 23, 0, 24}, {12, 10, 2, 5, 9}, {20, 13, 15, 18, 22}, {4, 7, 16, 14, 21} };
     // int bla[3][3] = { {1, 2, 3}, {0, 6, 4}, {8, 7, 5} };
     // int bla[9] = { 8, 7, 3, 6, 1, 5, 0, 2, 4 };
-    int bla[16] = { 13, 12, 14, 4, 9, 8, 0, 3, 15, 10, 2, 5, 6, 1, 11, 7 };
+    // int bla[16] = { 13, 12, 14, 4, 9, 8, 0, 3, 15, 10, 2, 5, 6, 1, 11, 7 };
+    int bla[16] = { 15, 6, 13, 4, 10, 11, 14, 1, 7, 2, 9, 0, 12, 8, 5, 3 };
+
 
     for (int i = 0; i < 16; i++) {
         // for (int j = 0; j < 3; j++)
@@ -41,12 +43,12 @@ int     main(void) {
     puzzle.getClosedList().insert(start.getPuzzle());
     while (!(puzzle.getOpenList().empty()) && i < 5) {
         Node *tmp = (puzzle.getOpenList().top());
-        if (i >= 0){
-            std::cout << "cur\n";
-            tmp->print();
-            std::cout << tmp->getH() << std::endl;
-        }
-        if (tmp->getH() == 2 && tmp->getG() != 0){
+        // if (i >= 0){
+        //     std::cout << "cur\n";
+        //     tmp->print();
+        //     std::cout << tmp->getH() << std::endl;
+        // }
+        if (tmp->getH() == 0 && tmp->getG() != 0){
             print(*tmp, 0);
             std::cout << puzzle.getOpenList().size() << std::endl;
             std::cout << puzzle.getClosedList().size() << std::endl;
@@ -56,7 +58,7 @@ int     main(void) {
         puzzle.getOpenList().pop();
         puzzle.addToList(*tmp);
         bla.push_back(tmp);
-        i++;
+        // i++;
     }
     bla.erase(bla.begin(), bla.end());
     std::cout << "aaa\n";

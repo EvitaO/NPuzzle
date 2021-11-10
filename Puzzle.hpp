@@ -16,7 +16,7 @@ struct        CompareF {
         bool    operator()(Node const *a, Node const *b) {
             if (a->getF() == b->getF())
                 return a->getH() > b->getH();
-            return a->getH() > b->getH();
+            return a->getF() > b->getF();
         }
 };
 

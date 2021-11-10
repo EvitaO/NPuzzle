@@ -55,25 +55,22 @@ void        Puzzle::addToList(Node &src) {
 void        Puzzle::calculateManhattan(Node &n) {
     int h = 0;
     
-    // if (n.getParent() != NULL && n.getParent()->getH() != 0){
-    //     h = n.getParent()->getH();
-    //     xy old_cor = n.getParent()->getEmptyPiece();
-    //     xy new_cor = n.getEmptyPiece();
-    //     int newpos = abs(old_cor.x - _mapGoal.find(n.getPuzzle()[old_cor.i])->second.x) + abs(old_cor.y - _mapGoal.find(n.getPuzzle()[old_cor.i])->second.y);
-    //     int oldpos = abs(new_cor.x - _mapGoal.find(n.getPuzzle()[old_cor.i])->second.x) + abs(new_cor.y - _mapGoal.find(n.getPuzzle()[old_cor.i])->second.y);
-    //     h = h - oldpos + newpos;
-    //     n.setH(h);
-    //     return;
-    // }
+    if (n.getParent() != NULL && n.getParent()->getH() != 0){
+        h = n.getParent()->getH();
+        xy old_cor = n.getParent()->getEmptyPiece();
+        xy new_cor = n.getEmptyPiece();
+        int newpos = abs(old_cor.x - _mapGoal.find(n.getPuzzle()[old_cor.i])->second.x) + abs(old_cor.y - _mapGoal.find(n.getPuzzle()[old_cor.i])->second.y);
+        int oldpos = abs(new_cor.x - _mapGoal.find(n.getPuzzle()[old_cor.i])->second.x) + abs(new_cor.y - _mapGoal.find(n.getPuzzle()[old_cor.i])->second.y);
+        h = h - oldpos + newpos;
+        n.setH(h);
+        return;
+    }
     std::vector<int> grid = n.getPuzzle();
     for (int i = 0; i < _size; i++) {
         if (grid[i] != 0){
             h += abs((i/static_cast<int>(sqrt(_size))) - _mapGoal.find(grid[i])->second.y) + abs((i%static_cast<int>(sqrt(_size))) - _mapGoal.find(grid[i])->second.x);
         }
     }
-    std::cout << "babies\n";
-    n.print();
-    std::cout << h << std::endl;
     n.setH(h);
 }
 
@@ -87,6 +84,87 @@ void    Puzzle::setGoal(){
     coordinates.y = 0;
     coordinates.i = 0;
     int val = 1;
+    if (_size == 16){
+        _goalState[0] = 1;
+        _goalState[1] = 2;
+        _goalState[2] = 3;
+        _goalState[3] = 4;
+        _goalState[4] = 12;
+        _goalState[5] = 13;
+        _goalState[6] = 14;
+        _goalState[7] = 5;
+        _goalState[8] = 11;
+        _goalState[9] = 0;
+        _goalState[10] = 15;
+        _goalState[11] = 6;
+        _goalState[12] = 10;
+        _goalState[13] = 9;
+        _goalState[14] = 8;
+        _goalState[15] = 7;
+     
+        coordinates.x = 0;        
+        coordinates.y = 0;        
+        _mapGoal.insert(std::make_pair(1, coordinates));
+
+        coordinates.x = 1;        
+        coordinates.y = 0;        
+        _mapGoal.insert(std::make_pair(2, coordinates));
+
+        coordinates.x = 2;        
+        coordinates.y = 0;        
+        _mapGoal.insert(std::make_pair(3, coordinates));
+
+        coordinates.x = 3;        
+        coordinates.y = 0;        
+        _mapGoal.insert(std::make_pair(4, coordinates));
+
+        coordinates.x = 3;        
+        coordinates.y = 1;        
+        _mapGoal.insert(std::make_pair(5, coordinates));
+
+        coordinates.x = 3;        
+        coordinates.y = 2;        
+        _mapGoal.insert(std::make_pair(6, coordinates));
+
+        coordinates.x = 3;        
+        coordinates.y = 3;        
+        _mapGoal.insert(std::make_pair(7, coordinates));
+
+        coordinates.x = 2;        
+        coordinates.y = 3;        
+        coordinates.i = 8; 
+        _mapGoal.insert(std::make_pair(8, coordinates));
+
+        coordinates.x = 1;        
+        coordinates.y = 3;        
+        _mapGoal.insert(std::make_pair(9, coordinates));
+
+        coordinates.x = 0;        
+        coordinates.y = 3;        
+        _mapGoal.insert(std::make_pair(10, coordinates));
+
+        coordinates.x = 0;        
+        coordinates.y = 2;        
+        _mapGoal.insert(std::make_pair(11, coordinates));
+ 
+        coordinates.x = 0;        
+        coordinates.y = 1;        
+        _mapGoal.insert(std::make_pair(12, coordinates));
+
+        coordinates.x = 1;        
+        coordinates.y = 1;        
+        _mapGoal.insert(std::make_pair(13, coordinates));
+
+        coordinates.x = 2;        
+        coordinates.y = 1;        
+        _mapGoal.insert(std::make_pair(14, coordinates));
+
+        coordinates.x = 2;        
+        coordinates.y = 2;        
+        _mapGoal.insert(std::make_pair(15, coordinates));
+        return;
+    }
+
     while (val < _size) {
         for (;coordinates.x < sqrt(_size) && _goalState[coordinates.i] == 0 && val < (_size); coordinates.x++, val++, coordinates.i++){
             _goalState[coordinates.i] = val;
