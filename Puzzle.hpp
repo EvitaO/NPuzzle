@@ -16,7 +16,7 @@ struct        CompareF {
         bool    operator()(Node const *a, Node const *b) {
             if (a->getF() == b->getF())
                 return a->getH() > b->getH();
-            return a->getF() > b->getF();
+            return a->getH() > b->getH();
         }
 };
 
@@ -44,7 +44,6 @@ class Puzzle {
         void        addToList(Node &src);
         void        setGoal();
         void        calculateManhattan(Node &n);
-        void        test(Node *src);
         std::unordered_set<std::vector<int>, ComparePuzzle>&    getClosedList();
         std::priority_queue<Node*, std::vector<Node*>, CompareF >&     getOpenList();
 

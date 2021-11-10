@@ -31,7 +31,6 @@ void        Puzzle::addToList(Node &src) {
                     current.i-1, \
                     current.i-static_cast<int>(sqrt(_size)), \
                     current.i+static_cast<int>(sqrt(_size)) }; 
-
     for(int i = 0; i < 4; i++){
         if ((current.i % static_cast<int>(sqrt(_size)) == 0 && i == 1) || (current.i % static_cast<int>(sqrt(_size)) == sqrt(_size)-1 && i == 0));
         else if (kids[i] >= 0 && kids[i] < _size) {
@@ -39,31 +38,15 @@ void        Puzzle::addToList(Node &src) {
             else{
                 Node *tmp = new Node(src.getSize());
                 tmp->getChild(src, kids[i]);
-                // std::cout << "child " << i << "is : \n";
-                // tmp->print();
-            //mayb makes it better or worser, not sure yet
-                // if (_closedlist.find(tmp->getPuzzle()) != _closedlist.end()) 
-                // {
-                //     if (_closedlist.find(tmp->getPuzzle())->getF() <= tmp->getF());
-                //     else {
-                //         _closedlist.erase(pos);
-                //         tmp->setParent(src);
-                //         calculateManhattan(*tmp);
-                //         _openlist.push(tmp);
-                //         _closedlist.insert(tmp);
-                //     }
-                // }
-                // else{
+         
                 if (_closedlist.find(tmp->getPuzzle()) == _closedlist.end()){
                     tmp->setParent(src);
                     calculateManhattan(*tmp);
                     _openlist.push(tmp);
                     _closedlist.insert(tmp->getPuzzle());
                 }
-                else{
-                    // std::cout << tmp << std::endl;
+                else
                     delete tmp;
-                }
             } 
         }
     }
@@ -72,22 +55,25 @@ void        Puzzle::addToList(Node &src) {
 void        Puzzle::calculateManhattan(Node &n) {
     int h = 0;
     
-    if (n.getParent() != NULL && n.getParent()->getH() != 0){
-        h = n.getParent()->getH();
-        xy old_cor = n.getParent()->getEmptyPiece();
-        xy new_cor = n.getEmptyPiece();
-        int newpos = abs(old_cor.x - _mapGoal.find(n.getPuzzle()[old_cor.i])->second.x) + abs(old_cor.y - _mapGoal.find(n.getPuzzle()[old_cor.i])->second.y);
-        int oldpos = abs(new_cor.x - _mapGoal.find(n.getPuzzle()[old_cor.i])->second.x) + abs(new_cor.y - _mapGoal.find(n.getPuzzle()[old_cor.i])->second.y);
-        h = h - oldpos + newpos;
-        n.setH(h);
-        return;
-    }
+    // if (n.getParent() != NULL && n.getParent()->getH() != 0){
+    //     h = n.getParent()->getH();
+    //     xy old_cor = n.getParent()->getEmptyPiece();
+    //     xy new_cor = n.getEmptyPiece();
+    //     int newpos = abs(old_cor.x - _mapGoal.find(n.getPuzzle()[old_cor.i])->second.x) + abs(old_cor.y - _mapGoal.find(n.getPuzzle()[old_cor.i])->second.y);
+    //     int oldpos = abs(new_cor.x - _mapGoal.find(n.getPuzzle()[old_cor.i])->second.x) + abs(new_cor.y - _mapGoal.find(n.getPuzzle()[old_cor.i])->second.y);
+    //     h = h - oldpos + newpos;
+    //     n.setH(h);
+    //     return;
+    // }
     std::vector<int> grid = n.getPuzzle();
-    for (int i = 0; i < _size; i++) {;
-            if (grid[i] != 0){
-            h += abs(i/static_cast<int>(sqrt(_size)) - _mapGoal.find(grid[i])->second.y) + abs(i%static_cast<int>(sqrt(_size)) - _mapGoal.find(grid[i])->second.x);
+    for (int i = 0; i < _size; i++) {
+        if (grid[i] != 0){
+            h += abs((i/static_cast<int>(sqrt(_size))) - _mapGoal.find(grid[i])->second.y) + abs((i%static_cast<int>(sqrt(_size))) - _mapGoal.find(grid[i])->second.x);
         }
     }
+    std::cout << "babies\n";
+    n.print();
+    std::cout << h << std::endl;
     n.setH(h);
 }
 
@@ -121,6 +107,9 @@ void    Puzzle::setGoal(){
         coordinates.y++;
         coordinates.x++;
     }
+    for (int i = 1; i < 16; i++){
+        std::cout << i << " x=  " << _mapGoal[i].x << " y=  " << _mapGoal[i].y << std::endl;
+    }
 }
 
 std::unordered_set<std::vector<int>, ComparePuzzle>&    Puzzle::getClosedList() {
@@ -130,3 +119,26 @@ std::unordered_set<std::vector<int>, ComparePuzzle>&    Puzzle::getClosedList() 
 std::priority_queue<Node*, std::vector<Node*>, CompareF >&     Puzzle::getOpenList() {
     return _openlist;
 }
+
+
+// 1   2   3   4
+// 12  13  14  5
+// 11  0   15  6
+// 10  9   8   7
+
+//         x       y
+// 1       0       0       
+// 2       1       0
+// 3       2       0
+// 4       3       0
+// 5       3       1
+// 6       3       2
+// 7       3       3
+// 8       2       3
+// 9       1       3
+// 10      0       3
+// 11      0       2
+// 12      0       1
+// 13      1       1
+// 14      2       1
+// 15      2       2

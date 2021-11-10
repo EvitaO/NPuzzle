@@ -21,7 +21,7 @@ class Node{
       ~Node();
 
       Node &      operator=(Node const & src);
-      void        setPuzzle(std::vector<int>);
+      void        setPuzzle(std::vector<int> &arr);
       void        setParent(Node &parent);
       void        setH(int h);
       
@@ -31,7 +31,7 @@ class Node{
       int         getSize() const;
       Node*       getParent() const;
       std::vector<int>       getPuzzle() const;
-      xy          getEmptyPiece() const;
+      xy&         getEmptyPiece();
       void        getChild(Node &src, int swapi);
 
       void        print();
