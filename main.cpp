@@ -13,6 +13,7 @@ std::vector<int>   createPuzzle() {
     // int bla[5][5] = { {6, 1, 3, 17, 19}, {8, 11, 23, 0, 24}, {12, 10, 2, 5, 9}, {20, 13, 15, 18, 22}, {4, 7, 16, 14, 21} };
     // int bla[3][3] = { {1, 2, 3}, {0, 6, 4}, {8, 7, 5} };
     int bla[9] = { 8, 7, 3, 6, 1, 5, 0, 2, 4 };
+    // int bla[16] = { 13, 12, 14, 4, 9, 8, 0, 3, 15, 10, 2, 5, 6, 1, 11, 7 };
 
     for (int i = 0; i < 9; i++) {
         // for (int j = 0; j < 3; j++)
@@ -37,22 +38,33 @@ int     main(void) {
 
     puzzle.getOpenList().push(start);
     puzzle.getClosedList().insert(start->getPuzzle());
-    while (!(puzzle.getOpenList().empty()) && i < 1984) {
+    // start->print();
+    std::cout << "\n\n";
+    while (!(puzzle.getOpenList().empty()) && i < 705) {
         Node *tmp = puzzle.getOpenList().top();
-        // tmp->print();
-        // std::cout << "\nF:  " << tmp->getF() << "\n" ;
-        // std::cout << "\nG:  " << tmp->getG() << "\n" ;
-        // std::cout << "\nH:  " << tmp->getH() << "\n" ;
+        if (i > 7500){
+            tmp->print();
+            std::cout << "\nF:  " << tmp->getF() << "\n" ;
+            std::cout << "\nG:  " << tmp->getG() << "\n" ;
+            std::cout << "\nH:  " << tmp->getH() << "\n" ;
+            std::cout << puzzle.getClosedList().size() << std::endl;
+            std::cout << puzzle.getOpenList().size() << std::endl;
+        }
         if (tmp->getH() == 0 && tmp->getG() != 0){
             print(*tmp, 0);
             std::cout << puzzle.getOpenList().size() << std::endl;
             std::cout << puzzle.getClosedList().size() << std::endl;
-             std::cout << i << std::endl;
-
-            return 0;
+            std::cout << i << std::endl;
+            break;
         }
         puzzle.getOpenList().pop();
         puzzle.addToList(*tmp);
+        // std::cout << "aaa\n";
+        // delete tmp;
+        // std::cout << "bbb\n";
         // i++;
+        // while (i == 700);
     }
+//     std::cout << "aaa\n";
+//     while(1);
 }

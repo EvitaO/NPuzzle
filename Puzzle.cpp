@@ -14,7 +14,8 @@ Puzzle::Puzzle(int s) {
 
 Puzzle::Puzzle(Puzzle const & src) {*this = src;}
 
-Puzzle::~Puzzle() {}
+Puzzle::~Puzzle() {
+}
 
 Puzzle &    Puzzle::operator=(Puzzle const & src) {
     _size = src._size;
@@ -32,21 +33,22 @@ void        Puzzle::addToList(Node &src) {
                     current.i+static_cast<int>(sqrt(_size)) }; 
 
     for(int i = 0; i < 4; i++){
-        if ((current.i % static_cast<int>(sqrt(_size)) == 0 && i == 1) || (current.i % static_cast<int>(sqrt(_size)) == 2 && i == 0));
+        if ((current.i % static_cast<int>(sqrt(_size)) == 0 && i == 1) || (current.i % static_cast<int>(sqrt(_size)) == sqrt(_size)-1 && i == 0));
         else if (kids[i] >= 0 && kids[i] < _size) {
             if (src.getParent() != NULL && src.getParent()->getEmptyPiece().i == kids[i]);
             else{
                 Node *tmp = new Node(src.getSize());
                 tmp->getChild(src, kids[i]);
-
+                // std::cout << "child " << i << "is : \n";
+                // tmp->print();
             //mayb makes it better or worser, not sure yet
                 // if (_closedlist.find(tmp->getPuzzle()) != _closedlist.end()) 
                 // {
-                //     if ((*pos)->getF() <= tmp->getF());
+                //     if (_closedlist.find(tmp->getPuzzle())->getF() <= tmp->getF());
                 //     else {
                 //         _closedlist.erase(pos);
-                //         calculateManhattan(*tmp);
                 //         tmp->setParent(src);
+                //         calculateManhattan(*tmp);
                 //         _openlist.push(tmp);
                 //         _closedlist.insert(tmp);
                 //     }
@@ -57,6 +59,10 @@ void        Puzzle::addToList(Node &src) {
                     calculateManhattan(*tmp);
                     _openlist.push(tmp);
                     _closedlist.insert(tmp->getPuzzle());
+                }
+                else{
+                    // std::cout << tmp << std::endl;
+                    delete tmp;
                 }
             } 
         }
