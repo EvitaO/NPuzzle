@@ -32,6 +32,7 @@ struct        ComparePuzzle {
 };
 
 class Puzzle {
+    
     public:
         Puzzle(int size);
         Puzzle(Puzzle const & src);
@@ -39,7 +40,7 @@ class Puzzle {
 
         Puzzle &    operator=(Puzzle const & src);
 
-        const std::vector<int>  getGoal() const;
+        // const std::vector<int>  getGoal() const;
 
         void        addToList(Node &src);
         void        setGoal();
@@ -55,10 +56,15 @@ class Puzzle {
         int _size;
         std::priority_queue<Node*, std::vector<Node*>, CompareF >  _openlist;
         std::unordered_set<std::vector<int>, ComparePuzzle>  _closedlist;
-        std::vector<int> _goalState;
-        std::unordered_map<int, xy > _mapGoal;
+        std::unordered_map<int, xy> _mapGoal;
 };
 
 
 
 #endif
+
+// 1 2 3 4 x
+// 12      5
+// 11      6
+// 10  9 8   7
+//       x
