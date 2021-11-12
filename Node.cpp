@@ -9,7 +9,8 @@ Node::Node(int s) {
     _g = 0;
     _h = 0;
     _puzzle.resize(_size, 0);
-    _parent = NULL;    
+    _parent = NULL;  
+    _hash = 0;  
 }
 
 Node::Node(Node const & src) {
@@ -57,6 +58,11 @@ void   Node::getChild(Node & src, int swapi) {
     _coordinates.x = swapi % static_cast<int>(sqrt(_size));
     _coordinates.y = swapi / static_cast<int>(sqrt(_size));
     _coordinates.i = swapi;
+    setHash(_puzzle);
+}
+
+uint64_t    Node::getHash() const{
+    return _hash;
 }
 
 void    Node::setPuzzle(std::vector<int> &arr) {
@@ -68,6 +74,7 @@ void    Node::setPuzzle(std::vector<int> &arr) {
             _coordinates.i = i;
         }
     }
+    setHash(_puzzle);
 }
 
 void    Node::setH(int h) {_h = h;}
@@ -75,6 +82,23 @@ void    Node::setH(int h) {_h = h;}
 void    Node::setParent(Node &parent){
     _parent = &parent;
     _g = parent.getG() + 1;
+}
+
+void    Node::setHash(std::vector<int> src){
+    size_t         s = src.size();
+    // for(int i = 0; i < s; i++){
+    //     if (src[i] != 0) {
+    //         _hash += (i + src[i]) % s;
+    //         std::cout << "bb    " << _hash << std::endl;
+    //     }
+    // }
+    // std::cout << "cc    " << _hash << std::endl;
+
+    for(auto& i : src) {
+        s ^= i + 0x9e3779b9 + (s << 6) + (s >> 2);
+    }
+    _hash = s;
+    // std::cout << _hash << "     t \n";
 }
 
 void    Node::print() {

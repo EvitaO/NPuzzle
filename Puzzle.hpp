@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <functional>
 #include <cmath>
+#include <vector>
 
 struct        CompareF {
         bool    operator()(Node const *a, Node const *b) {
@@ -23,10 +24,14 @@ struct        CompareF {
 struct        ComparePuzzle {
     std::size_t    operator()(std::vector<int> a) {
         std::size_t ret = 0;
-        std::vector<int>::iterator    it;
+        int         s = a.size();
+        // std::vector<int>::iterator    it;
 
-        for (it = a.begin(); it != a.end(); it++)
-                ret += std::hash<int>()(*it);
+        // for (it = a.begin(); it != a.end(); it++)
+        for(int i = 0; i < s; i++){
+            if (a[i] != 0)
+                ret += (i + a[i]) % s;
+        }
         return ret;
     }
 };
@@ -45,7 +50,7 @@ class Puzzle {
         void        addToList(Node &src);
         void        setGoal();
         void        calculateManhattan(Node &n);
-        std::unordered_set<std::vector<int>, ComparePuzzle>&    getClosedList();
+        std::unordered_map<uint64_t, int>&    getClosedList();
         std::priority_queue<Node*, std::vector<Node*>, CompareF >&     getOpenList();
 
 
@@ -55,7 +60,7 @@ class Puzzle {
 
         int _size;
         std::priority_queue<Node*, std::vector<Node*>, CompareF >  _openlist;
-        std::unordered_set<std::vector<int>, ComparePuzzle>  _closedlist;
+        std::unordered_map<uint64_t, int>  _closedlist;
         std::unordered_map<int, xy> _mapGoal;
 };
 

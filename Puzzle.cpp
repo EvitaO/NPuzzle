@@ -36,12 +36,20 @@ void        Puzzle::addToList(Node &src) {
             else{
                 Node *tmp = new Node(src.getSize());
                 tmp->getChild(src, kids[i]);
-         
-                if (_closedlist.find(tmp->getPuzzle()) == _closedlist.end()){
+                // tmp->setHash(tmp->getPuzzle());
+                // std::cout << tmp->getHash() << std::endl;
+                if (_closedlist.find(tmp->getHash()) == _closedlist.end()){
                     tmp->setParent(src);
                     calculateManhattan(*tmp);
                     _openlist.push(tmp);
-                    _closedlist.insert(tmp->getPuzzle());
+                    _closedlist.insert(std::make_pair(tmp->getHash(), tmp->getG()));
+                }
+                else if (_closedlist.find(tmp->getHash())->second > tmp->getG()){
+                    _closedlist.erase(tmp->getHash());
+                    tmp->setParent(src);
+                    calculateManhattan(*tmp);
+                    _openlist.push(tmp);
+                    _closedlist.insert(std::make_pair(tmp->getHash(), tmp->getG()));
                 }
                 else
                     delete tmp;
@@ -96,13 +104,9 @@ void    Puzzle::setGoal(){
         coordinates.x++;
         cnt++;
     }
-
-    // for (int i = 1; i < _size; i++){
-    //     std::cout << i << " x=  " << _mapGoal[i].x << " y=  " << _mapGoal[i].y << std::endl;
-    // }
 }
 
-std::unordered_set<std::vector<int>, ComparePuzzle>&    Puzzle::getClosedList() {
+std::unordered_map<uint64_t, int>&    Puzzle::getClosedList() {
     return _closedlist;
 }
 

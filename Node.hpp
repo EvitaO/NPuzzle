@@ -24,6 +24,7 @@ class Node{
       void        setPuzzle(std::vector<int> &arr);
       void        setParent(Node &parent);
       void        setH(int h);
+      void        setHash(std::vector<int> src);
       
       int         getF() const;
       int         getG() const;
@@ -33,7 +34,7 @@ class Node{
       std::vector<int>       getPuzzle() const;
       xy&         getEmptyPiece();
       void        getChild(Node &src, int swapi);
-
+      uint64_t    getHash() const;
       void        print();
           
  private:
@@ -46,6 +47,7 @@ class Node{
        Node    *_parent;
        std::vector<int> _puzzle;
        xy     _coordinates;
+       uint64_t     _hash;
 };
 
 #endif  // NODE_HPP_
