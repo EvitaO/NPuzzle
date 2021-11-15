@@ -16,6 +16,7 @@ struct        xy {
 
 class Node{
  public:
+      Node();
       Node(int s);
       Node(Node const & src);
       ~Node();
@@ -38,7 +39,6 @@ class Node{
       void        print();
           
  private:
-       Node();
      //   int     _f;
        int     _g;
        int     _h;

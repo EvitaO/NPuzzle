@@ -8,7 +8,7 @@ Node::Node(int s) {
     _size = s;
     _g = 0;
     _h = 0;
-    _puzzle.resize(_size, 0);
+    _puzzle.resize(_size*_size, 0);
     _parent = NULL;  
     _hash = 0;  
 }
@@ -51,12 +51,14 @@ xy&      Node::getEmptyPiece() {
 }
 
 void   Node::getChild(Node & src, int swapi) {
-    xy coordinates = src.getEmptyPiece();
-    _puzzle = src.getPuzzle();
+    xy coordinates = src._coordinates;
+    // xy coordinates = src.getEmptyPiece();
+    _puzzle = src._puzzle;
+    // _puzzle = src.getPuzzle();
     _puzzle[coordinates.i] = _puzzle[swapi];
     _puzzle[swapi] = 0;
-    _coordinates.x = swapi % static_cast<int>(sqrt(_size));
-    _coordinates.y = swapi / static_cast<int>(sqrt(_size));
+    _coordinates.x = swapi % _size;
+    _coordinates.y = swapi / _size;
     _coordinates.i = swapi;
     setHash(_puzzle);
 }
@@ -67,10 +69,10 @@ uint64_t    Node::getHash() const{
 
 void    Node::setPuzzle(std::vector<int> &arr) {
     _puzzle = arr;
-    for (int i = 0; i < _size; i++) {
+    for (int i = 0; i < (_size*_size); i++) {
         if (_puzzle[i] == 0) {
-            _coordinates.x = i % static_cast<int>(sqrt(_size));
-            _coordinates.y = i / static_cast<int>(sqrt(_size));
+            _coordinates.x = i % _size;
+            _coordinates.y = i / _size;
             _coordinates.i = i;
         }
     }
@@ -102,8 +104,8 @@ void    Node::setHash(std::vector<int> src){
 }
 
 void    Node::print() {
-    for (int i = 0; i < _size ; i++) {
-        if (i % static_cast<int>(sqrt(_size)) == 0 && i != 0)
+    for (int i = 0; i < (_size * _size); i++) {
+        if (i % _size == 0 && i != 0)
             std::cout << std::endl;
         std::cout << _puzzle[i] << " ";
     }

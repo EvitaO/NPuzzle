@@ -1,0 +1,6 @@
+# This puzzle is solvable
+4
+ 2 14 10 11
+ 0  9  4 15
+ 5  1 13  7
+ 3  6 12  8 #akakaka

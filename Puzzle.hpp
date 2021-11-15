@@ -21,21 +21,6 @@ struct        CompareF {
         }
 };
 
-struct        ComparePuzzle {
-    std::size_t    operator()(std::vector<int> a) {
-        std::size_t ret = 0;
-        int         s = a.size();
-        // std::vector<int>::iterator    it;
-
-        // for (it = a.begin(); it != a.end(); it++)
-        for(int i = 0; i < s; i++){
-            if (a[i] != 0)
-                ret += (i + a[i]) % s;
-        }
-        return ret;
-    }
-};
-
 class Puzzle {
     
     public:
