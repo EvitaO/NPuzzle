@@ -43,11 +43,12 @@ void        Puzzle::addToList(Node &src) {
                     _closedlist.insert(std::make_pair(tmp->getHash(), tmp->getG()));
                 }
                 else if (_closedlist.find(tmp->getHash())->second > tmp->getG()){
-                    _closedlist.erase(tmp->getHash());
+                    // _closedlist.erase(tmp->getHash());
+					_closedlist[tmp->getHash()] = tmp->getG();
                     tmp->setParent(src);
                     calculateManhattan(*tmp);
                     _openlist.push(tmp);
-                    _closedlist.insert(std::make_pair(tmp->getHash(), tmp->getG()));
+                    // _closedlist.insert(std::make_pair(tmp->getHash(), tmp->getG()));
                 }
                 else
                     delete tmp;
@@ -59,11 +60,12 @@ void        Puzzle::addToList(Node &src) {
 void        Puzzle::calculateManhattan(Node &n) {
     int h = 0;
     
+    std::vector<int> grid = n.getPuzzle();
     if (n.getParent() != NULL && n.getParent()->getH() != 0){
         h = n.getParent()->getH();
         xy old_cor = n.getParent()->getEmptyPiece();
         xy new_cor = n.getEmptyPiece();
-        xy goal = _mapGoal.find(n.getPuzzle()[old_cor.i])->second;
+        xy goal = _mapGoal.find(grid[old_cor.i])->second;
 
         int newpos = abs(old_cor.x - goal.x) + abs(old_cor.y - goal.y);
         int oldpos = abs(new_cor.x - goal.x) + abs(new_cor.y - goal.y);
@@ -72,7 +74,7 @@ void        Puzzle::calculateManhattan(Node &n) {
         return;
     }
     else{
-        std::vector<int> grid = n.getPuzzle();
+        // std::vector<int> grid = n.getPuzzle();
         for (int i = 0; i < (_size*_size); i++) {
             if (grid[i] != 0){
                 h += abs((i/_size) - _mapGoal.find(grid[i])->second.y) + abs((i%_size) - _mapGoal.find(grid[i])->second.x);
@@ -109,7 +111,7 @@ void    Puzzle::setGoal(){
     }
 }
 
-std::unordered_map<int, int>&    Puzzle::getClosedList() {
+std::unordered_map<uint64_t, int>&    Puzzle::getClosedList() {
     return _closedlist;
 }
 

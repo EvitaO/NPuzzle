@@ -115,6 +115,7 @@ void    aStarAlgo(Node *start){
         }
         if (tmp->getH() == 0 && tmp->getG() != 0){
             print(*tmp, 0);
+            std::cout << tmp->getG() << std::endl;
             std::cout << puzzle.getOpenList().size() << std::endl;
             std::cout << puzzle.getClosedList().size() << std::endl;
             std::cout << visited.size() << std::endl;
@@ -123,7 +124,7 @@ void    aStarAlgo(Node *start){
         puzzle.getOpenList().pop();
         puzzle.addToList(*tmp);
         visited.push_back(tmp);
-        // i++;
+        i++;
     }
     visited.erase(visited.begin(), visited.end());
 }

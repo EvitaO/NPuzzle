@@ -87,7 +87,7 @@ void    Node::setParent(Node &parent){
 }
 
 void    Node::setHash(std::vector<int> src){
-    size_t         s = src.size();
+    uint64_t         s = src.size();
     // for(int i = 0; i < s; i++){
     //     if (src[i] != 0) {
     //         _hash += (i + src[i]) % s;
