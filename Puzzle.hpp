@@ -17,7 +17,7 @@ struct        CompareF {
         bool    operator()(Node const *a, Node const *b) {
             if (a->getF() == b->getF())
                 return a->getH() > b->getH();
-            return a->getF() > b->getF();
+            return (a->getF() > b->getF());
         }
 };
 
@@ -30,12 +30,11 @@ class Puzzle {
 
         Puzzle &    operator=(Puzzle const & src);
 
-        // const std::vector<int>  getGoal() const;
 
         void        addToList(Node &src);
         void        setGoal();
         void        calculateManhattan(Node &n);
-        std::unordered_map<uint64_t, int>&    getClosedList();
+        std::unordered_map<int, int>&    getClosedList();
         std::priority_queue<Node*, std::vector<Node*>, CompareF >&     getOpenList();
 
 
@@ -45,7 +44,7 @@ class Puzzle {
 
         int _size;
         std::priority_queue<Node*, std::vector<Node*>, CompareF >  _openlist;
-        std::unordered_map<uint64_t, int>  _closedlist;
+        std::unordered_map<int, int>  _closedlist;
         std::unordered_map<int, xy> _mapGoal;
 };
 

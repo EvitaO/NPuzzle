@@ -101,20 +101,29 @@ Node*    readfile(char *file){
 void    aStarAlgo(Node *start){
     Puzzle  puzzle(start->getSize());
     std::deque<Node*> visited;
+    float i = 0;
 
     puzzle.getOpenList().push(start);
     puzzle.getClosedList().insert(std::make_pair(start->getHash(), 0));
-    while (!(puzzle.getOpenList().empty())) {
+    while (!(puzzle.getOpenList().empty()) && i < 1500005) {
         Node *tmp = (puzzle.getOpenList().top());
+        if (i >= 1500000){
+            std::cout << std::endl;
+            tmp->print();
+            std::cout << visited.size() << std::endl;
+            std::cout << tmp->getF() << "   " << tmp->getH() << std::endl;
+        }
         if (tmp->getH() == 0 && tmp->getG() != 0){
             print(*tmp, 0);
             std::cout << puzzle.getOpenList().size() << std::endl;
             std::cout << puzzle.getClosedList().size() << std::endl;
+            std::cout << visited.size() << std::endl;
             break;
         }
         puzzle.getOpenList().pop();
         puzzle.addToList(*tmp);
         visited.push_back(tmp);
+        // i++;
     }
     visited.erase(visited.begin(), visited.end());
 }
@@ -133,7 +142,7 @@ int     main(int argc, char **argv){
     else{
         try{
             start = readfile(argv[1]);
-        // start->print();
+            // start->print();
         }
         catch(std::exception &e){
             std::cout << "Invald input format\n";

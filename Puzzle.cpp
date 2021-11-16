@@ -59,23 +59,27 @@ void        Puzzle::addToList(Node &src) {
 void        Puzzle::calculateManhattan(Node &n) {
     int h = 0;
     
-    std::vector<int> grid = n.getPuzzle();
     if (n.getParent() != NULL && n.getParent()->getH() != 0){
         h = n.getParent()->getH();
         xy old_cor = n.getParent()->getEmptyPiece();
         xy new_cor = n.getEmptyPiece();
-        int newpos = abs(old_cor.x - _mapGoal.find(grid[old_cor.i])->second.x) + abs(old_cor.y - _mapGoal.find(grid[old_cor.i])->second.y);
-        int oldpos = abs(new_cor.x - _mapGoal.find(grid[old_cor.i])->second.x) + abs(new_cor.y - _mapGoal.find(grid[old_cor.i])->second.y);
+        xy goal = _mapGoal.find(n.getPuzzle()[old_cor.i])->second;
+
+        int newpos = abs(old_cor.x - goal.x) + abs(old_cor.y - goal.y);
+        int oldpos = abs(new_cor.x - goal.x) + abs(new_cor.y - goal.y);
         h = h - oldpos + newpos;
         n.setH(h);
         return;
     }
-    for (int i = 0; i < (_size*_size); i++) {
-        if (grid[i] != 0){
-            h += abs((i/_size) - _mapGoal.find(grid[i])->second.y) + abs((i%_size) - _mapGoal.find(grid[i])->second.x);
+    else{
+        std::vector<int> grid = n.getPuzzle();
+        for (int i = 0; i < (_size*_size); i++) {
+            if (grid[i] != 0){
+                h += abs((i/_size) - _mapGoal.find(grid[i])->second.y) + abs((i%_size) - _mapGoal.find(grid[i])->second.x);
+            }
         }
+        n.setH(h);
     }
-    n.setH(h);
 }
 
 void    Puzzle::setGoal(){
@@ -105,7 +109,7 @@ void    Puzzle::setGoal(){
     }
 }
 
-std::unordered_map<uint64_t, int>&    Puzzle::getClosedList() {
+std::unordered_map<int, int>&    Puzzle::getClosedList() {
     return _closedlist;
 }
 

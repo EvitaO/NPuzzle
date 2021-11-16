@@ -47,7 +47,7 @@ class Node{
        Node    *_parent;
        std::vector<int> _puzzle;
        xy     _coordinates;
-       uint64_t     _hash;
+       int     _hash;
 };
 
 #endif  // NODE_HPP_
