@@ -34,6 +34,7 @@ class Puzzle {
         void        addToList(Node &src);
         void        setGoal();
         void        calculateManhattan(Node &n);
+        void        calculateMisplacedNodes(Node &n);
         std::unordered_map<uint64_t, int>&    getClosedList();
         std::priority_queue<Node*, std::vector<Node*>, CompareF >&     getOpenList();
 

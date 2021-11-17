@@ -105,7 +105,7 @@ void    aStarAlgo(Node *start){
 
     puzzle.getOpenList().push(start);
     puzzle.getClosedList().insert(std::make_pair(start->getHash(), 0));
-    while (!(puzzle.getOpenList().empty()) && i < 1500005) {
+    while (!(puzzle.getOpenList().empty()) && i < 268) {
         Node *tmp = (puzzle.getOpenList().top());
         if (i >= 1500000){
             std::cout << std::endl;
@@ -115,22 +115,27 @@ void    aStarAlgo(Node *start){
         }
         if (tmp->getH() == 0 && tmp->getG() != 0){
             print(*tmp, 0);
-            std::cout << tmp->getG() << std::endl;
+            std::cout << "Number of moves: " << tmp->getG() << std::endl;
             std::cout << puzzle.getOpenList().size() << std::endl;
             std::cout << puzzle.getClosedList().size() << std::endl;
             std::cout << visited.size() << std::endl;
             break;
-        }
+        }     
         puzzle.getOpenList().pop();
-        puzzle.addToList(*tmp);
         visited.push_back(tmp);
-        i++;
+        puzzle.addToList(*tmp);
+        // i++;
     }
-    visited.erase(visited.begin(), visited.end());
+    while (!(visited.empty())){
+        Node *tmp = visited.front();
+        visited.pop_front();
+        delete tmp;
+    }
 }
 
 int     main(int argc, char **argv){
     Node *start;
+    {
     if (argc != 2){
         try{
             start = createPuzzle();
@@ -151,5 +156,8 @@ int     main(int argc, char **argv){
         }
     }
     aStarAlgo(start);
+    }
+    std::cout << "a\n";
+    // while(1);
     return 0;
 }

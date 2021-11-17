@@ -14,6 +14,11 @@ Puzzle::Puzzle(int s) {
 Puzzle::Puzzle(Puzzle const & src) {*this = src;}
 
 Puzzle::~Puzzle() {
+    while (!(_openlist.empty())){
+        Node *tmp = _openlist.top();
+        _openlist.pop();
+        delete tmp;
+    }
 }
 
 Puzzle &    Puzzle::operator=(Puzzle const & src) {
@@ -28,7 +33,7 @@ void        Puzzle::addToList(Node &src) {
     int kids[4] = { current.i+1, \
                     current.i-1, \
                     current.i-_size, \
-                    current.i+_size }; 
+                    current.i+_size };
     for(int i = 0; i < 4; i++){
         if ((current.i % _size == 0 && i == 1) || (current.i % _size == _size-1 && i == 0));
         else if (kids[i] >= 0 && kids[i] < (_size*_size)) {
@@ -36,13 +41,14 @@ void        Puzzle::addToList(Node &src) {
             else{
                 Node *tmp = new Node(src.getSize());
                 tmp->getChild(src, kids[i]);
-                if (_closedlist.find(tmp->getHash()) == _closedlist.end()){
+                auto it = _closedlist.find(tmp->getHash());
+                if (it == _closedlist.end()){
                     tmp->setParent(src);
                     calculateManhattan(*tmp);
                     _openlist.push(tmp);
                     _closedlist.insert(std::make_pair(tmp->getHash(), tmp->getG()));
                 }
-                else if (_closedlist.find(tmp->getHash())->second > tmp->getG()){
+                else if (it->second > tmp->getG()){
                     // _closedlist.erase(tmp->getHash());
 					_closedlist[tmp->getHash()] = tmp->getG();
                     tmp->setParent(src);
@@ -55,6 +61,32 @@ void        Puzzle::addToList(Node &src) {
             } 
         }
     }
+}
+
+void        Puzzle::calculateMisplacedNodes(Node &n){
+    int h = 0;
+    std::vector<int> grid = n.getPuzzle();
+    if (n.getParent() != NULL && n.getParent()->getH() != 0){
+        h = n.getParent()->getH();
+        xy old_cor = n.getParent()->getEmptyPiece();
+        xy new_cor = n.getEmptyPiece();
+        xy goal = _mapGoal.find(grid[old_cor.i])->second;
+        if (goal.x == old_cor.x && goal.y == old_cor.y)
+            h--;
+        else if (goal.x == new_cor.x && goal.y == new_cor.y)
+            h++;
+        n.setH(h);
+    }
+    else{
+        for (int i = 0; i < (_size*_size); i++){
+            if (grid[i] != 0){
+                xy goal = _mapGoal.find(grid[i])->second;
+                if (goal.x != i % _size || goal.y != i / _size)
+                    h++;
+            }
+        }
+    }
+    n.setH(h);
 }
 
 void        Puzzle::calculateManhattan(Node &n) {

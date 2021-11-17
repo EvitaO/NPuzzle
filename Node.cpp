@@ -18,6 +18,7 @@ Node::Node(Node const & src) {
 }
 
 Node::~Node() {
+    // delete _parent;
 }
 
 Node &  Node::operator=(Node const & src) {
