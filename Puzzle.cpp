@@ -131,10 +131,10 @@ void    Puzzle::setGoal(){
         for (coordinates.x--,coordinates.y++; coordinates.y < (_size - cnt) && val < (_size*_size); val++, coordinates.y++, coordinates.i++) {
             _mapGoal.insert(std::make_pair(val, coordinates));
         }
-        for (coordinates.x--, coordinates.y--; coordinates.x >= 0 && val < (_size*_size) - cnt; val++, coordinates.x--, coordinates.i++) {
+        for (coordinates.x--, coordinates.y--; coordinates.x >= (0 + cnt) && val < (_size*_size); val++, coordinates.x--, coordinates.i++) {
             _mapGoal.insert(std::make_pair(val, coordinates));
         }
-        for (coordinates.y--, coordinates.x++; coordinates.y > 0 && val < (_size*_size) - cnt; val++, coordinates.y--, coordinates.i++) {
+        for (coordinates.y--, coordinates.x++; coordinates.y > (0 + cnt) && val < (_size*_size); val++, coordinates.y--, coordinates.i++) {
             _mapGoal.insert(std::make_pair(val, coordinates));
         }
         coordinates.y++;
