@@ -22,7 +22,7 @@ int     getUserInput(){
     return size;
 }
 
-Node*   createPuzzle(){
+Node   createPuzzle(){
     srand(time(NULL));
     int size = getUserInput();
     std::vector<int> grid(size*size, -1);
@@ -35,9 +35,9 @@ Node*   createPuzzle(){
             }
         }
     }
-    Node *ret = new Node(size);
-    ret->setPuzzle(grid);
-    ret->print();
+    Node ret(size);
+    ret.setPuzzle(grid);
+    ret.print();
     return ret;
 }
 
@@ -65,7 +65,7 @@ bool     controlInput(std::vector<int> input, int size){
     return true;
 }
 
-Node*    readfile(char *file){
+Node    readfile(char *file){
     std::string line;
     std::ifstream f(file);
     int     size = 0;
@@ -93,14 +93,14 @@ Node*    readfile(char *file){
     }
     if (!(controlInput(tmp, size)))
         throw std::runtime_error("");
-    Node *ret = new Node(size);
-    ret->setPuzzle(tmp);
+    Node ret(size);
+    ret.setPuzzle(tmp);
     return ret;
 }
 
 void    aStarAlgo(Node *start){
     Puzzle  puzzle(start->getSize());
-    std::deque<Node*> visited;
+    // std::deque<Node*> visited;
     float i = 0;
 
     puzzle.getOpenList().push(start);
@@ -110,7 +110,7 @@ void    aStarAlgo(Node *start){
         if (i >= 1500000){
             std::cout << std::endl;
             tmp->print();
-            std::cout << visited.size() << std::endl;
+            // std::cout << visited.size() << std::endl;
             std::cout << tmp->getF() << "   " << tmp->getH() << std::endl;
         }
         if (tmp->getH() == 0 && tmp->getG() != 0){
@@ -118,23 +118,35 @@ void    aStarAlgo(Node *start){
             std::cout << "Number of moves: " << tmp->getG() << std::endl;
             std::cout << puzzle.getOpenList().size() << std::endl;
             std::cout << puzzle.getClosedList().size() << std::endl;
-            std::cout << visited.size() << std::endl;
+            // std::cout << visited.size() << std::endl;
             break;
         }     
         puzzle.getOpenList().pop();
-        visited.push_back(tmp);
+        // visited.push_back(tmp);
         puzzle.addToList(*tmp);
+        for (int i = 0; i < tmp->getChildren().size(); i++){
+            puzzle.getOpenList().push(&(tmp->getChildren()[i]));
+            puzzle.getClosedList().insert(std::make_pair(tmp->getChildren()[i].getHash(), tmp->getChildren()[i].getG()));
+        }
         // i++;
     }
-    while (!(visited.empty())){
-        Node *tmp = visited.front();
-        visited.pop_front();
-        delete tmp;
-    }
+    // while (!(visited.empty())){
+    //     Node *tmp = visited.front();
+    //     visited.pop_front();
+    //     delete tmp;
+    // }
+    // 1        2       3       4       5       6       7       8       0
+    // 00       01      02      12      22      21      20      10      11
+    
+    
+    // 1        2        3        8        0        4        7        6        5
+    //00        01       02       10       11       12       20       21       22
+
+
 }
 
 int     main(int argc, char **argv){
-    Node *start;
+    Node start;
     {
     if (argc != 2){
         try{
@@ -155,7 +167,7 @@ int     main(int argc, char **argv){
             return 0;
         }
     }
-    aStarAlgo(start);
+    aStarAlgo(&start);
     }
     std::cout << "a\n";
     // while(1);

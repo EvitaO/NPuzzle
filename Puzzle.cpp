@@ -14,11 +14,11 @@ Puzzle::Puzzle(int s) {
 Puzzle::Puzzle(Puzzle const & src) {*this = src;}
 
 Puzzle::~Puzzle() {
-    while (!(_openlist.empty())){
-        Node *tmp = _openlist.top();
-        _openlist.pop();
-        delete tmp;
-    }
+    // while (!(_openlist.empty())){
+    //     Node *tmp = _openlist.top();
+    //     _openlist.pop();
+    //     delete tmp;
+    // }
 }
 
 Puzzle &    Puzzle::operator=(Puzzle const & src) {
@@ -39,25 +39,29 @@ void        Puzzle::addToList(Node &src) {
         else if (kids[i] >= 0 && kids[i] < (_size*_size)) {
             if (src.getParent() != NULL && src.getParent()->getEmptyPiece().i == kids[i]);
             else{
-                Node *tmp = new Node(src.getSize());
-                tmp->getChild(src, kids[i]);
-                auto it = _closedlist.find(tmp->getHash());
+                Node tmp(&src);
+                tmp.getChild(src, kids[i]);
+                auto it = _closedlist.find(tmp.getHash());
+                // std::cout << "a\n";
                 if (it == _closedlist.end()){
-                    tmp->setParent(src);
-                    calculateManhattan(*tmp);
-                    _openlist.push(tmp);
-                    _closedlist.insert(std::make_pair(tmp->getHash(), tmp->getG()));
+                    tmp.setParent(src);
+                    calculateManhattan(tmp);
+                    src.getChildren().push_back(tmp);
+                    // _openlist.push(&tmp);
+                    // _closedlist.insert(std::make_pair(tmp.getHash(), tmp.getG()));
                 }
-                else if (it->second > tmp->getG()){
+                else if (it->second > tmp.getG()){
                     // _closedlist.erase(tmp->getHash());
-					_closedlist[tmp->getHash()] = tmp->getG();
-                    tmp->setParent(src);
-                    calculateManhattan(*tmp);
-                    _openlist.push(tmp);
+					_closedlist[tmp.getHash()] = tmp.getG();
+                    tmp.setParent(src);
+                    calculateManhattan(tmp);
+                    // _openlist.push(&tmp);
+                    // src.getChildren()[src.getChildren().size()] = tmp;
+                    src.getChildren().push_back(tmp);
                     // _closedlist.insert(std::make_pair(tmp->getHash(), tmp->getG()));
                 }
-                else
-                    delete tmp;
+                // else
+                //     delete tmp;
             } 
         }
     }

@@ -18,6 +18,7 @@ class Node{
  public:
       Node();
       Node(int s);
+      Node(Node *src);
       Node(Node const & src);
       ~Node();
 
@@ -37,6 +38,7 @@ class Node{
       void        getChild(Node &src, int swapi);
       uint64_t    getHash() const;
       void        print();
+      std::vector<Node>&      getChildren();
           
  private:
      //   int     _f;
@@ -48,6 +50,7 @@ class Node{
        std::vector<int> _puzzle;
        xy     _coordinates;
        uint64_t     _hash;
+       std::vector<Node> _children;
 };
 
 #endif  // NODE_HPP_

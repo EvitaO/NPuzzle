@@ -8,9 +8,19 @@ Node::Node(int s) {
     _size = s;
     _g = 0;
     _h = 0;
-    _puzzle.resize(_size*_size, 0);
+    _puzzle.assign(_size*_size, 0);
+    _children.reserve(4);
     _parent = NULL;  
     _hash = 0;  
+}
+
+Node::Node(Node *src) : _g(src->_g), _h(src->_h), \
+                        _size(src->_size), _parent(src), \
+                        _puzzle(src->_puzzle), \
+                        _coordinates(src->_coordinates), \
+                        _hash(src->_hash)
+{
+    _children.reserve(4);
 }
 
 Node::Node(Node const & src) {
@@ -22,16 +32,14 @@ Node::~Node() {
 }
 
 Node &  Node::operator=(Node const & src) {
-    //_f = src.getF();
-    _g = src.getG();
-    _h = src.getH();
-    _size = src.getSize();
-    // std::cout << &src << std::endl;
-    
-    _puzzle.resize(_size, 0);    
-    _parent = src.getParent();
-    // std::cout << &_parent << std::endl;
-    _puzzle = src.getPuzzle();
+    _g = src._g;
+    _h = src._h;
+    _size = src._size;
+    // _puzzle.resize(_size*_size, 0);    
+    _parent = src._parent;
+    _puzzle = src._puzzle;
+    _coordinates = src._coordinates;
+    _hash = src._hash;
     return *this;
 }
 
@@ -52,11 +60,7 @@ xy&      Node::getEmptyPiece() {
 }
 
 void   Node::getChild(Node & src, int swapi) {
-    xy coordinates = src._coordinates;
-    // xy coordinates = src.getEmptyPiece();
-    _puzzle = src._puzzle;
-    // _puzzle = src.getPuzzle();
-    _puzzle[coordinates.i] = _puzzle[swapi];
+    _puzzle[_coordinates.i] = _puzzle[swapi];
     _puzzle[swapi] = 0;
     _coordinates.x = swapi % _size;
     _coordinates.y = swapi / _size;
@@ -66,6 +70,10 @@ void   Node::getChild(Node & src, int swapi) {
 
 uint64_t    Node::getHash() const{
     return _hash;
+}
+
+std::vector<Node>&  Node::getChildren(){
+    return _children;
 }
 
 void    Node::setPuzzle(std::vector<int> &arr) {
