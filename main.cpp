@@ -5,6 +5,7 @@
 #include <sstream>
 #include <ctime>
 #include <cstdlib>
+#include <memory>
 
 int     getUserInput(){
     std::string input;
@@ -22,7 +23,7 @@ int     getUserInput(){
     return size;
 }
 
-Node*   createPuzzle(){
+std::unique_ptr<Node>   createPuzzle(){
     srand(time(NULL));
     int size = getUserInput();
     std::vector<int> grid(size*size, -1);
@@ -35,7 +36,7 @@ Node*   createPuzzle(){
             }
         }
     }
-    Node *ret = new Node(size);
+    std::unique_ptr<Node> ret = std::make_unique<Node>(Node(size));
     ret->setPuzzle(grid);
     ret->print();
     return ret;
@@ -65,7 +66,7 @@ bool     controlInput(std::vector<int> input, int size){
     return true;
 }
 
-Node*    readfile(char *file){
+std::unique_ptr<Node>    readfile(char *file){
     std::string line;
     std::ifstream f(file);
     int     size = 0;
@@ -93,48 +94,37 @@ Node*    readfile(char *file){
     }
     if (!(controlInput(tmp, size)))
         throw std::runtime_error("");
-    Node *ret = new Node(size);
+    std::unique_ptr<Node> ret = std::make_unique<Node>(Node(size));
+    // std::unique_ptr<Node> ret = new Node(size);
     ret->setPuzzle(tmp);
     return ret;
 }
 
 void    aStarAlgo(Node *start){
     Puzzle  puzzle(start->getSize());
-    std::deque<Node*> visited;
-    float i = 0;
+    int i = 0;
 
     puzzle.getOpenList().push(start);
     puzzle.getClosedList().insert(std::make_pair(start->getHash(), 0));
-    while (!(puzzle.getOpenList().empty()) && i < 268) {
+    while (!(puzzle.getOpenList().empty())) {
+        i++;      
         Node *tmp = (puzzle.getOpenList().top());
-        if (i >= 1500000){
-            std::cout << std::endl;
-            tmp->print();
-            std::cout << visited.size() << std::endl;
-            std::cout << tmp->getF() << "   " << tmp->getH() << std::endl;
-        }
         if (tmp->getH() == 0 && tmp->getG() != 0){
             print(*tmp, 0);
             std::cout << "Number of moves: " << tmp->getG() << std::endl;
+            std::cout << "Time complexity: " << i << std::endl;
+            std::cout << "Size complexity: " << puzzle.getAllList().size() << std::endl;
             std::cout << puzzle.getOpenList().size() << std::endl;
             std::cout << puzzle.getClosedList().size() << std::endl;
-            std::cout << visited.size() << std::endl;
             break;
         }     
         puzzle.getOpenList().pop();
-        visited.push_back(tmp);
         puzzle.addToList(*tmp);
-        // i++;
-    }
-    while (!(visited.empty())){
-        Node *tmp = visited.front();
-        visited.pop_front();
-        delete tmp;
     }
 }
 
 int     main(int argc, char **argv){
-    Node *start;
+    std::unique_ptr<Node> start;
     {
     if (argc != 2){
         try{
@@ -155,7 +145,7 @@ int     main(int argc, char **argv){
             return 0;
         }
     }
-    aStarAlgo(start);
+    aStarAlgo(&(*start));
     }
     std::cout << "a\n";
     // while(1);

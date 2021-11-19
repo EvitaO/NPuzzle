@@ -4,14 +4,10 @@
 // Copyright 2021 <eovertoo>
 
 #include "Node.hpp"
-#include <unordered_set>
-#include <queue>
 #include <unordered_map>
-#include <map>
-#include <cstdlib>
-#include <functional>
-#include <cmath>
-#include <vector>
+#include <deque>
+#include <queue>
+#include <memory>
 
 struct        CompareF {
         bool    operator()(Node const *a, Node const *b) {
@@ -32,11 +28,14 @@ class Puzzle {
 
 
         void        addToList(Node &src);
+        void        setupChild(Node &src, int newpos);
         void        setGoal();
         void        calculateManhattan(Node &n);
         void        calculateMisplacedNodes(Node &n);
-        std::unordered_map<uint64_t, int>&    getClosedList();
-        std::priority_queue<Node*, std::vector<Node*>, CompareF >&     getOpenList();
+
+        std::unordered_map<uint64_t, int>&                              getClosedList();
+        std::priority_queue<Node*, std::vector<Node*>, CompareF >&      getOpenList();
+        std::deque<std::unique_ptr<Node> >                              getAllList();
 
 
     private:
@@ -44,17 +43,10 @@ class Puzzle {
         Puzzle();
 
         int _size;
-        std::priority_queue<Node*, std::vector<Node*>, CompareF >  _openlist;
-        std::unordered_map<uint64_t, int>  _closedlist;
-        std::unordered_map<int, xy> _mapGoal;
+        std::priority_queue<Node*, std::vector<Node*>, CompareF >       _openlist;
+        std::unordered_map<uint64_t, int>                               _closedlist;
+        std::deque<xy>                                                  _mapGoal;
+        std::deque<std::unique_ptr<Node> >                              _allNodes;
 };
 
-
-
 #endif
-
-// 1 2 3 4 x
-// 12      5
-// 11      6
-// 10  9 8   7
-//       x

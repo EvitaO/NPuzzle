@@ -5,8 +5,6 @@
 
 #include <iostream>
 #include <vector>
-#include <algorithm>
-#include <cmath>
 
 struct        xy {
        int    x, y, i;
@@ -22,6 +20,7 @@ class Node{
       ~Node();
 
       Node &      operator=(Node const & src);
+
       void        setPuzzle(std::vector<int> &arr);
       void        setParent(Node &parent);
       void        setH(int h);
@@ -31,23 +30,24 @@ class Node{
       int         getG() const;
       int         getH() const;
       int         getSize() const;
-      Node*       getParent() const;
-      std::vector<int>       getPuzzle() const;
-      xy&         getEmptyPiece();
-      void        getChild(Node &src, int swapi);
       uint64_t    getHash() const;
+      
+      Node*              getParent() const;
+      std::vector<int>   getPuzzle() const;
+      xy&                getEmptyPiece();
+
+      void        swapGrid(Node &src, int swapi);
       void        print();
           
  private:
-     //   int     _f;
        int     _g;
        int     _h;
        int     _size;
 
-       Node    *_parent;
-       std::vector<int> _puzzle;
-       xy     _coordinates;
-       uint64_t     _hash;
+       Node              *_parent;
+       std::vector<int>  _puzzle;
+       xy                _coordinates;
+       uint64_t          _hash;
 };
 
 #endif  // NODE_HPP_

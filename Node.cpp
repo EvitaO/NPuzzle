@@ -18,20 +18,16 @@ Node::Node(Node const & src) {
 }
 
 Node::~Node() {
-    // delete _parent;
 }
 
 Node &  Node::operator=(Node const & src) {
-    //_f = src.getF();
     _g = src.getG();
     _h = src.getH();
     _size = src.getSize();
-    // std::cout << &src << std::endl;
-    
-    _puzzle.resize(_size, 0);    
+    _puzzle.resize(_size*_size, 0);    
     _parent = src.getParent();
-    // std::cout << &_parent << std::endl;
     _puzzle = src.getPuzzle();
+    _coordinates = src._coordinates;
     return *this;
 }
 
@@ -51,11 +47,9 @@ xy&      Node::getEmptyPiece() {
     return _coordinates;
 }
 
-void   Node::getChild(Node & src, int swapi) {
+void   Node::swapGrid(Node & src, int swapi) {
     xy coordinates = src._coordinates;
-    // xy coordinates = src.getEmptyPiece();
     _puzzle = src._puzzle;
-    // _puzzle = src.getPuzzle();
     _puzzle[coordinates.i] = _puzzle[swapi];
     _puzzle[swapi] = 0;
     _coordinates.x = swapi % _size;
