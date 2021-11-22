@@ -31,11 +31,11 @@ Node &  Node::operator=(Node const & src) {
     return *this;
 }
 
-int     Node::getF() const {return (_g + _h);}
+float   Node::getF() const {return (_g + _h);}
 
 int     Node::getG() const {return _g;}
 
-int     Node::getH() const {return _h;}
+float   Node::getH() const {return _h;}
 
 int     Node::getSize() const {return _size;}
 
@@ -74,11 +74,12 @@ void    Node::setPuzzle(std::vector<int> &arr) {
     setHash(_puzzle);
 }
 
-void    Node::setH(int h) {_h = h;}
+void    Node::setH(float h) {_h = h;}
 
-void    Node::setParent(Node &parent){
+void    Node::setParent(Node &parent, int searchtype){
     _parent = &parent;
-    _g = parent.getG() + 1;
+    if (searchtype != 1)
+        _g = parent.getG() + 1;
 }
 
 void    Node::setHash(std::vector<int> src){

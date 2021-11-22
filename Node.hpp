@@ -22,13 +22,13 @@ class Node{
       Node &      operator=(Node const & src);
 
       void        setPuzzle(std::vector<int> &arr);
-      void        setParent(Node &parent);
-      void        setH(int h);
+      void        setParent(Node &parent, int searchtype);
+      void        setH(float h);
       void        setHash(std::vector<int> src);
       
-      int         getF() const;
+      float       getF() const;
       int         getG() const;
-      int         getH() const;
+      float       getH() const;
       int         getSize() const;
       uint64_t    getHash() const;
       
@@ -41,7 +41,7 @@ class Node{
           
  private:
        int     _g;
-       int     _h;
+       float   _h;
        int     _size;
 
        Node              *_parent;

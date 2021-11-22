@@ -42,9 +42,11 @@ std::unique_ptr<Node>   createPuzzle(){
     return ret;
 }
 
-void    print(Node &tmp, int moves){
-    if (tmp.getParent() != NULL)
-        print(*(tmp.getParent()), moves+1);
+void    print(Node &tmp, int *moves){
+    if (tmp.getParent() != NULL){
+        (*moves)++;
+        print(*(tmp.getParent()), moves);
+    }
     tmp.print();
     std::cout << "---------------------\n";
 }
@@ -72,6 +74,8 @@ std::unique_ptr<Node>    readfile(char *file){
     int     size = 0;
     int     vecsize = 0;
     std::vector<int> tmp;
+    if (!f)
+        throw std::runtime_error("");
     while (f.is_open()){
         while (getline(f, line)){
             line = line.substr(0, line.find("#"));
@@ -100,18 +104,40 @@ std::unique_ptr<Node>    readfile(char *file){
     return ret;
 }
 
-void    aStarAlgo(Node *start){
-    Puzzle  puzzle(start->getSize());
-    int i = 0;
+Options getInput(){
+    Options input;
+    int tmp = -1;
 
+    while (tmp < 0){
+        std::cout << "Which search method do you want to use: \n" << "  0:  A* algorithm\n" << "    1:  Greedy search\n" << "   2:  Uniform cost\n";
+        std::cin >> tmp;
+    }
+    input.search = tmp;
+    if (input.search == 2)
+        return input;
+    tmp = -1;
+    while (tmp < 0){
+        std::cout << "Which heuristic method do you want to use: \n" << "  0:  Manhattan\n" << "    1:  Euclidean\n" << "   2:  Misplaced pieces\n";
+        std::cin >> tmp;
+    }
+    input.heuristic = tmp;
+    return input;
+}
+
+void    aStarAlgo(Node *start, Options input){
+    Puzzle  puzzle(start->getSize(), input);
+    int i = 0;
+    int moves = 0;
+
+    puzzle.calculateHeuristic(*start);
     puzzle.getOpenList().push(start);
     puzzle.getClosedList().insert(std::make_pair(start->getHash(), 0));
     while (!(puzzle.getOpenList().empty())) {
-        i++;      
+        i++;
         Node *tmp = (puzzle.getOpenList().top());
-        if (tmp->getH() == 0 && tmp->getG() != 0){
-            print(*tmp, 0);
-            std::cout << "Number of moves: " << tmp->getG() << std::endl;
+        if (puzzle.isGoal(*tmp)){
+            print(*tmp, &moves);
+            std::cout << "Number of moves: " << moves << std::endl;
             std::cout << "Time complexity: " << i << std::endl;
             std::cout << "Size complexity: " << puzzle.getAllList().size() << std::endl;
             std::cout << puzzle.getOpenList().size() << std::endl;
@@ -124,8 +150,12 @@ void    aStarAlgo(Node *start){
 }
 
 int     main(int argc, char **argv){
-    std::unique_ptr<Node> start;
+    std::unique_ptr<Node> start; 
     {
+    if (argc > 2){
+        std::cout << "Invalid input\n";
+        return 0;
+    }
     if (argc != 2){
         try{
             start = createPuzzle();
@@ -133,21 +163,19 @@ int     main(int argc, char **argv){
         catch(std::exception &e){
             std::cout << "Invalid size\n";
             return 0;
-        }// std::cout << "oepsieee\n";
+        }
     }
     else{
         try{
             start = readfile(argv[1]);
-            // start->print();
         }
         catch(std::exception &e){
             std::cout << "Invald input format\n";
             return 0;
         }
     }
-    aStarAlgo(&(*start));
+    aStarAlgo(&(*start), getInput());
     }
-    std::cout << "a\n";
     // while(1);
     return 0;
 }

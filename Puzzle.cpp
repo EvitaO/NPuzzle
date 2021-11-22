@@ -6,9 +6,10 @@
 
 Puzzle::Puzzle() {}
 
-Puzzle::Puzzle(int s) {
+Puzzle::Puzzle(int s, Options input) {
     _size = s;
     _mapGoal.resize(s*s);
+    _userinput = input;
     setGoal();
 }
 
@@ -30,79 +31,54 @@ void        Puzzle::setupChild(Node &src, int newpos){
     else{
         std::unique_ptr<Node> tmp = std::make_unique<Node>(Node(src.getSize()));
         tmp->swapGrid(src, newpos);
+        tmp->setParent(src, _userinput.search);
         auto it = _closedlist.find(tmp->getHash());
         if (it == _closedlist.end()){
-            tmp->setParent(src);
-            calculateManhattan(*tmp);
+            calculateHeuristic(*tmp);
             _openlist.push(&(*tmp));
             _closedlist.insert(std::make_pair(tmp->getHash(), tmp->getG()));
             _allNodes.push_back(std::move(tmp));
         }
         else if (it->second > tmp->getG()){
 		    _closedlist[tmp->getHash()] = tmp->getG();
-            tmp->setParent(src);
-            calculateManhattan(*tmp);
+            calculateHeuristic(*tmp);
             _openlist.push(&(*tmp));
-             _allNodes.push_back(std::move(tmp));
+            _allNodes.push_back(std::move(tmp));
         }
     }
 }
 
 void        Puzzle::addToList(Node &src) {
     xy  current = src.getEmptyPiece();
-    switch(0){
-        case 0:
-            if (current.i % _size != _size-1){
-                if (current.i+1 >= 0 && current.i+1 < (_size*_size)){
-                    setupChild(src, current.i+1);
-                }
-            }           
-        case 1:
-            if (current.i % _size != 0){
-                if (current.i-1 >= 0 && current.i-1 < (_size*_size)){
-                    setupChild(src, current.i-1);
-                }
-            }
-        case 2:
-            if (current.i-_size >= 0 && current.i-_size < (_size*_size)){
-                setupChild(src, current.i-_size);
-            }
-        case 3:
-            if (current.i+_size >= 0 && (current.i+_size) < (_size*_size)){
-                setupChild(src, current.i+_size);
-            }
-        default:
-            break;
+    //MOVE RIGHT
+    if (current.i % _size != _size-1){
+        if (current.i+1 >= 0 && current.i+1 < (_size*_size))
+            setupChild(src, current.i+1);
     }
-    // int kids[4] = { current.i+1, \
-    //                 current.i-1, \
-    //                 current.i-_size, \
-    //                 current.i+_size };
-    // for(int i = 0; i < 4; i++){
-    //     if ((current.i % _size == 0 && i == 1) || (current.i % _size == _size-1 && i == 0));
-    //     else if (kids[i] >= 0 && kids[i] < (_size*_size)) {
-    //         if (src.getParent() != NULL && src.getParent()->getEmptyPiece().i == kids[i]);
-    //         else{
-    //             std::unique_ptr<Node> tmp = std::make_unique<Node>(Node(src.getSize()));
-    //             tmp->swapGrid(src, kids[i]);
-    //             auto it = _closedlist.find(tmp->getHash());
-    //             if (it == _closedlist.end()){
-    //                 tmp->setParent(src);
-    //                 calculateManhattan(*tmp);
-    //                 _openlist.push(&(*tmp));
-    //                 _closedlist.insert(std::make_pair(tmp->getHash(), tmp->getG()));
-    //                 _allNodes.push_back(std::move(tmp));
-    //             }
-    //             else if (it->second > tmp->getG()){
-	// 				_closedlist[tmp->getHash()] = tmp->getG();
-    //                 tmp->setParent(src);
-    //                 calculateManhattan(*tmp);
-    //                 _openlist.push(&(*tmp));
-    //                 _allNodes.push_back(std::move(tmp));
-    //             }
-    //         } 
-    //     }
-    // }
+    //MOVE LEFT      
+    if (current.i % _size != 0){
+        if (current.i-1 >= 0 && current.i-1 < (_size*_size))
+            setupChild(src, current.i-1);
+    }
+    //MOVE UP
+    if (current.i-_size >= 0 && current.i-_size < (_size*_size))
+        setupChild(src, current.i-_size);
+    //MOVE DOWN
+    if (current.i+_size >= 0 && (current.i+_size) < (_size*_size))
+        setupChild(src, current.i+_size);
+}
+
+void        Puzzle::calculateHeuristic(Node &n){
+    if (_userinput.search == 0 || _userinput.search == 1){
+        if (_userinput.heuristic == 0)
+            calculateManhattan(n);
+        if (_userinput.heuristic == 1)
+            calculateEuclidean(n);
+        if (_userinput.heuristic == 2)
+            calculateMisplacedNodes(n);
+    }
+    else
+        n.setH(0);
 }
 
 void        Puzzle::calculateMisplacedNodes(Node &n){
@@ -127,22 +103,35 @@ void        Puzzle::calculateMisplacedNodes(Node &n){
                     h++;
             }
         }
+        n.setH(h);
+    }
+}
+
+void        Puzzle::calculateEuclidean(Node &n){
+    float h = 0;
+    std::vector<int> grid = n.getPuzzle();
+    for(int i = 0; i < (_size*_size); i++){
+        if (grid[i] != 0){
+            int y = pow(abs((i/_size) - _mapGoal[grid[i]].y), 2);
+            int x = pow(abs((i%_size) - _mapGoal[grid[i]].x), 2);
+            h += sqrt((y+x));
+        }
     }
     n.setH(h);
 }
 
-void        Puzzle::calculateManhattan(Node &n) {
+void        Puzzle::calculateManhattan(Node &n){
     int h = 0;
     
     std::vector<int> grid = n.getPuzzle();
     if (n.getParent() != NULL && n.getParent()->getH() != 0){
         h = n.getParent()->getH();
-        xy old_cor = n.getParent()->getEmptyPiece();
-        xy new_cor = n.getEmptyPiece();
-        xy goal = _mapGoal[grid[old_cor.i]];
+        xy new_cor = n.getParent()->getEmptyPiece();
+        xy old_cor = n.getEmptyPiece();
+        xy goal = _mapGoal[grid[new_cor.i]];
 
-        int newpos = abs(old_cor.x - goal.x) + abs(old_cor.y - goal.y);
-        int oldpos = abs(new_cor.x - goal.x) + abs(new_cor.y - goal.y);
+        int newpos = abs(new_cor.x - goal.x) + abs(new_cor.y - goal.y);
+        int oldpos = abs(old_cor.x - goal.x) + abs(old_cor.y - goal.y);
         h = h - oldpos + newpos;
         n.setH(h);
         return;
@@ -182,6 +171,25 @@ void    Puzzle::setGoal(){
         coordinates.x++;
         cnt++;
     }
+}
+
+bool                                Puzzle::isGoal(Node &n){
+    if (_userinput.search == 0 && n.getH() == 0)
+        return true;
+    if (_userinput.search == 1 && n.getH() == 0)
+        return true;
+    if (_userinput.search == 2){
+        std::vector<int> grid = n.getPuzzle();
+        for (int i = 0; i < (_size*_size); i++){
+            if (grid[i] != 0){
+                xy goal = _mapGoal[grid[i]];
+                if (goal.x != i % _size || goal.y != i / _size)
+                    return false;
+            }
+        }
+        return true;
+    }
+    return false;
 }
 
 std::unordered_map<uint64_t, int>&    Puzzle::getClosedList() {
