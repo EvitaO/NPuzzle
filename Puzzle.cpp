@@ -1,33 +1,20 @@
-// Copyright 2021 <eovertoo>
-
 #include "Puzzle.hpp"
-#include <iterator>
-
 
 Puzzle::Puzzle() {}
 
 Puzzle::Puzzle(int s, Options input) {
     _size = s;
-    _mapGoal.resize(s*s);
+    _goal.resize(s*s);
     _userinput = input;
     setGoal();
 }
 
-Puzzle::Puzzle(Puzzle const & src) {*this = src;}
-
 Puzzle::~Puzzle() {
 }
 
-Puzzle &    Puzzle::operator=(Puzzle const & src) {
-    _size = src._size;
-    _openlist = src._openlist;
-    _closedlist = src._closedlist;
-    return *this;
-}
-
-
 void        Puzzle::setupChild(Node &src, int newpos){
-    if (src.getParent() != NULL && src.getParent()->getEmptyPiece().i == newpos);
+    if (src.getParent() != NULL && src.getParent()->getEmptyPiece().i == newpos)
+        return;
     else{
         std::unique_ptr<Node> tmp = std::make_unique<Node>(Node(src.getSize()));
         tmp->swapGrid(src, newpos);
@@ -88,7 +75,7 @@ void        Puzzle::calculateMisplacedNodes(Node &n){
         h = n.getParent()->getH();
         xy old_cor = n.getParent()->getEmptyPiece();
         xy new_cor = n.getEmptyPiece();
-        xy goal = _mapGoal[grid[old_cor.i]];
+        xy goal = _goal[grid[old_cor.i]];
         if (goal.x == old_cor.x && goal.y == old_cor.y)
             h--;
         else if (goal.x == new_cor.x && goal.y == new_cor.y)
@@ -98,7 +85,7 @@ void        Puzzle::calculateMisplacedNodes(Node &n){
     else{
         for (int i = 0; i < (_size*_size); i++){
             if (grid[i] != 0){
-                xy goal = _mapGoal[grid[i]];
+                xy goal = _goal[grid[i]];
                 if (goal.x != i % _size || goal.y != i / _size)
                     h++;
             }
@@ -112,8 +99,8 @@ void        Puzzle::calculateEuclidean(Node &n){
     std::vector<int> grid = n.getPuzzle();
     for(int i = 0; i < (_size*_size); i++){
         if (grid[i] != 0){
-            int y = pow(abs((i/_size) - _mapGoal[grid[i]].y), 2);
-            int x = pow(abs((i%_size) - _mapGoal[grid[i]].x), 2);
+            int y = pow(abs((i/_size) - _goal[grid[i]].y), 2);
+            int x = pow(abs((i%_size) - _goal[grid[i]].x), 2);
             h += sqrt((y+x));
         }
     }
@@ -128,7 +115,7 @@ void        Puzzle::calculateManhattan(Node &n){
         h = n.getParent()->getH();
         xy new_cor = n.getParent()->getEmptyPiece();
         xy old_cor = n.getEmptyPiece();
-        xy goal = _mapGoal[grid[new_cor.i]];
+        xy goal = _goal[grid[new_cor.i]];
 
         int newpos = abs(new_cor.x - goal.x) + abs(new_cor.y - goal.y);
         int oldpos = abs(old_cor.x - goal.x) + abs(old_cor.y - goal.y);
@@ -139,14 +126,14 @@ void        Puzzle::calculateManhattan(Node &n){
     else{
         for (int i = 0; i < (_size*_size); i++){
             if (grid[i] != 0){
-                h += abs((i/_size) - _mapGoal[grid[i]].y) + abs((i%_size) - _mapGoal[grid[i]].x);
+                h += abs((i/_size) - _goal[grid[i]].y) + abs((i%_size) - _goal[grid[i]].x);
             }
         }
         n.setH(h);
     }
 }
 
-void    Puzzle::setGoal(){
+void        Puzzle::setGoal(){
     xy coordinates;
     coordinates.x = 0;
     coordinates.y = 0;
@@ -156,16 +143,16 @@ void    Puzzle::setGoal(){
 
     while(val < (_size*_size)){
         for (;coordinates.x < (_size - cnt) && val < (_size*_size); coordinates.x++, val++, coordinates.i++){
-            _mapGoal[val] = coordinates;
+            _goal[val] = coordinates;
         }
         for (coordinates.x--,coordinates.y++; coordinates.y < (_size - cnt) && val < (_size*_size); val++, coordinates.y++, coordinates.i++) {
-            _mapGoal[val] = coordinates;
+            _goal[val] = coordinates;
         }
         for (coordinates.x--, coordinates.y--; coordinates.x >= (0 + cnt) && val < (_size*_size); val++, coordinates.x--, coordinates.i++) {
-            _mapGoal[val] = coordinates;
+            _goal[val] = coordinates;
         }
         for (coordinates.y--, coordinates.x++; coordinates.y > (0 + cnt) && val < (_size*_size); val++, coordinates.y--, coordinates.i++) {
-            _mapGoal[val] = coordinates;
+            _goal[val] = coordinates;
         }
         coordinates.y++;
         coordinates.x++;
@@ -173,7 +160,7 @@ void    Puzzle::setGoal(){
     }
 }
 
-bool                                Puzzle::isGoal(Node &n){
+bool        Puzzle::isGoal(Node &n){
     if (_userinput.search == 0 && n.getH() == 0)
         return true;
     if (_userinput.search == 1 && n.getH() == 0)
@@ -182,7 +169,7 @@ bool                                Puzzle::isGoal(Node &n){
         std::vector<int> grid = n.getPuzzle();
         for (int i = 0; i < (_size*_size); i++){
             if (grid[i] != 0){
-                xy goal = _mapGoal[grid[i]];
+                xy goal = _goal[grid[i]];
                 if (goal.x != i % _size || goal.y != i / _size)
                     return false;
             }
@@ -192,14 +179,14 @@ bool                                Puzzle::isGoal(Node &n){
     return false;
 }
 
-std::unordered_map<uint64_t, int>&    Puzzle::getClosedList() {
+std::unordered_map<uint64_t, int>&                              Puzzle::getClosedList() {
     return _closedlist;
 }
 
-std::priority_queue<Node*, std::vector<Node*>, CompareF >&     Puzzle::getOpenList() {
+std::priority_queue<Node*, std::vector<Node*>, CompareF >&      Puzzle::getOpenList() {
     return _openlist;
 }
 
-std::deque<std::unique_ptr<Node> >     Puzzle::getAllList(){
+std::deque<std::unique_ptr<Node> >                              Puzzle::getAllList(){
     return std::move(_allNodes);
 }

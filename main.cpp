@@ -1,46 +1,6 @@
 //  Copyright 2021 <eovertoo>
 
-#include "Puzzle.hpp"
-#include <fstream>
-#include <sstream>
-#include <ctime>
-#include <cstdlib>
-#include <memory>
-
-int     getUserInput(){
-    std::string input;
-    std::cout << "give the size of a puzzle\n";
-    std::cin >> input;
-
-    for (int i = 0; i < std::strlen(input.c_str()); i++)
-    {
-        if (!isdigit(input[i]))
-            throw std::runtime_error("");
-    }
-    int size = stoi(input);
-    if (size <= 1)
-        throw std::runtime_error("");
-    return size;
-}
-
-std::unique_ptr<Node>   createPuzzle(){
-    srand(time(NULL));
-    int size = getUserInput();
-    std::vector<int> grid(size*size, -1);
-    for (int i = 0; i < size*size; i++){
-        while (1){
-            int tmp = rand() % (size * size);
-            if (grid[tmp] == -1){
-                grid[tmp] = i;
-                break;
-            }
-        }
-    }
-    std::unique_ptr<Node> ret = std::make_unique<Node>(Node(size));
-    ret->setPuzzle(grid);
-    ret->print();
-    return ret;
-}
+#include "utils.hpp"
 
 void    print(Node &tmp, int *moves){
     if (tmp.getParent() != NULL){
@@ -49,79 +9,6 @@ void    print(Node &tmp, int *moves){
     }
     tmp.print();
     std::cout << "---------------------\n";
-}
-
-bool     controlInput(std::vector<int> input, int size){
-    if (input.size() != size*size)
-        return false;
-    std::vector<std::string> nums(size*size);
-    for (int i = 0; i < size*size; i++){
-        if (input[i] >= size*size)
-            return false;
-        else if (nums[input[i]] == "1")
-            return false;
-        else
-            nums[input[i]] = "1";
-    }
-    if (nums.size() != size*size)
-        return false;
-    return true;
-}
-
-std::unique_ptr<Node>    readfile(char *file){
-    std::string line;
-    std::ifstream f(file);
-    int     size = 0;
-    int     vecsize = 0;
-    std::vector<int> tmp;
-    if (!f)
-        throw std::runtime_error("");
-    while (f.is_open()){
-        while (getline(f, line)){
-            line = line.substr(0, line.find("#"));
-            if (line == "" || line == "\n");
-            else if (size == 0)
-                size = std::stoi(line);
-            else{
-                int num;
-                std::istringstream bla(line);
-                while (bla >> num)
-                    tmp.push_back(num);
-                if (tmp.size() - vecsize == size)
-                    vecsize = tmp.size();
-                else{
-                    throw std::runtime_error("");
-                }        
-            }
-        }
-        f.close();
-    }
-    if (!(controlInput(tmp, size)))
-        throw std::runtime_error("");
-    std::unique_ptr<Node> ret = std::make_unique<Node>(Node(size));
-    // std::unique_ptr<Node> ret = new Node(size);
-    ret->setPuzzle(tmp);
-    return ret;
-}
-
-Options getInput(){
-    Options input;
-    int tmp = -1;
-
-    while (tmp < 0){
-        std::cout << "Which search method do you want to use: \n" << "  0:  A* algorithm\n" << "    1:  Greedy search\n" << "   2:  Uniform cost\n";
-        std::cin >> tmp;
-    }
-    input.search = tmp;
-    if (input.search == 2)
-        return input;
-    tmp = -1;
-    while (tmp < 0){
-        std::cout << "Which heuristic method do you want to use: \n" << "  0:  Manhattan\n" << "    1:  Euclidean\n" << "   2:  Misplaced pieces\n";
-        std::cin >> tmp;
-    }
-    input.heuristic = tmp;
-    return input;
 }
 
 void    aStarAlgo(Node *start, Options input){
@@ -149,6 +36,61 @@ void    aStarAlgo(Node *start, Options input){
     }
 }
 
+bool    isValid(Node *start){
+    std::vector<int>    goal;
+    for (int i = 1; i < start->getSize() * start->getSize(); i++)
+        goal.push_back(i);
+    std::vector<int>    init;
+    int cnt = 0;
+    int size = start->getSize();
+    std::vector<int>    puzzle = start->getPuzzle();
+    xy  coordinates;
+    coordinates.x = 0;
+    coordinates.y = 0;
+
+    while(init.size() < (size*size) - 1){
+        for (;coordinates.x < (size - cnt); coordinates.x++){
+            if (puzzle[coordinates.x+(coordinates.y*size)] != 0)
+                init.push_back(puzzle[coordinates.x+(coordinates.y*size)]);
+        }
+        for (coordinates.x--,coordinates.y++; coordinates.y < (size - cnt); coordinates.y++) {
+            if (puzzle[coordinates.x+(coordinates.y*size)] != 0)
+                init.push_back(puzzle[coordinates.x+(coordinates.y*size)]);
+        }
+        for (coordinates.x--, coordinates.y--; coordinates.x >= (0 + cnt); coordinates.x--) {
+            if (puzzle[coordinates.x+(coordinates.y*size)] != 0)
+                init.push_back(puzzle[coordinates.x+(coordinates.y*size)]);
+        }
+        for (coordinates.y--, coordinates.x++; coordinates.y > (0 + cnt); coordinates.y--) {
+            if (puzzle[coordinates.x+(coordinates.y*size)] != 0)
+                init.push_back(puzzle[coordinates.x+(coordinates.y*size)]);
+        }
+        coordinates.y++;
+        coordinates.x++;
+        cnt++;
+    }
+    int inversions = 0;
+    for (int i = 0; i < size*size; i++){
+        int tmp = 0;
+        for (int x = i; x < init.size(); x++){
+            if (init[i] > init[x])
+                tmp++;
+            if (tmp == init[i] - 1)
+                break;
+        }
+        inversions += tmp;
+    }
+    if (size % 2 != 0 && inversions % 2 != 0)
+        return false;
+    else if (size % 2 == 0) {
+        if (size - start->getEmptyPiece().y % 2 == 0 && inversions % 2 == 0)
+            return false;
+        if (size - start->getEmptyPiece().y % 2 != 0 && inversions % 2 != 0)
+            return false;
+    }
+    return true;
+}
+               
 int     main(int argc, char **argv){
     std::unique_ptr<Node> start; 
     {
@@ -165,7 +107,7 @@ int     main(int argc, char **argv){
             return 0;
         }
     }
-    else{
+    else {
         try{
             start = readfile(argv[1]);
         }
@@ -174,7 +116,10 @@ int     main(int argc, char **argv){
             return 0;
         }
     }
-    aStarAlgo(&(*start), getInput());
+    if (isValid(&(*start)))
+        aStarAlgo(&(*start), chooseInput());
+    else
+        std::cout << "Puzzle is unsolvable\n";
     }
     // while(1);
     return 0;

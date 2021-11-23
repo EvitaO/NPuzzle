@@ -1,8 +1,6 @@
 #ifndef PUZZLE_HPP_
 #define PUZZLE_HPP_
 
-// Copyright 2021 <eovertoo>
-
 #include "Node.hpp"
 #include <unordered_map>
 #include <deque>
@@ -31,14 +29,11 @@ class Puzzle {
     
     public:
         Puzzle(int size, Options input);
-        Puzzle(Puzzle const & src);
         ~Puzzle();
-
-        Puzzle &    operator=(Puzzle const & src);
-
 
         void        addToList(Node &src);
         void        setupChild(Node &src, int newpos);
+
         void        setGoal();
         bool        isGoal(Node &n);
 
@@ -60,7 +55,7 @@ class Puzzle {
         Options                                                         _userinput;
         std::priority_queue<Node*, std::vector<Node*>, CompareF >       _openlist;
         std::unordered_map<uint64_t, int>                               _closedlist;
-        std::deque<xy>                                                  _mapGoal;
+        std::deque<xy>                                                  _goal;
         std::deque<std::unique_ptr<Node> >                              _allNodes;
 };
 

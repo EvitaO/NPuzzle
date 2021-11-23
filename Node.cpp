@@ -1,5 +1,3 @@
-// Copyright 2021 <eovertoo>
-
 #include "Node.hpp"
 
 Node::Node() {}
@@ -28,41 +26,11 @@ Node &  Node::operator=(Node const & src) {
     _parent = src.getParent();
     _puzzle = src.getPuzzle();
     _coordinates = src._coordinates;
+    _hash = src._hash;
     return *this;
 }
 
-float   Node::getF() const {return (_g + _h);}
-
-int     Node::getG() const {return _g;}
-
-float   Node::getH() const {return _h;}
-
-int     Node::getSize() const {return _size;}
-
-Node*   Node::getParent() const {return _parent;}
-
-std::vector<int>   Node::getPuzzle() const {return _puzzle;}
-
-xy&      Node::getEmptyPiece() {
-    return _coordinates;
-}
-
-void   Node::swapGrid(Node & src, int swapi) {
-    xy coordinates = src._coordinates;
-    _puzzle = src._puzzle;
-    _puzzle[coordinates.i] = _puzzle[swapi];
-    _puzzle[swapi] = 0;
-    _coordinates.x = swapi % _size;
-    _coordinates.y = swapi / _size;
-    _coordinates.i = swapi;
-    setHash(_puzzle);
-}
-
-uint64_t    Node::getHash() const{
-    return _hash;
-}
-
-void    Node::setPuzzle(std::vector<int> &arr) {
+void                    Node::setPuzzle(std::vector<int> &arr) {
     _puzzle = arr;
     for (int i = 0; i < (_size*_size); i++) {
         if (_puzzle[i] == 0) {
@@ -74,32 +42,50 @@ void    Node::setPuzzle(std::vector<int> &arr) {
     setHash(_puzzle);
 }
 
-void    Node::setH(float h) {_h = h;}
-
-void    Node::setParent(Node &parent, int searchtype){
+void                    Node::setParent(Node &parent, int searchtype){
     _parent = &parent;
     if (searchtype != 1)
         _g = parent.getG() + 1;
 }
 
-void    Node::setHash(std::vector<int> src){
-    uint64_t         s = src.size();
-    // for(int i = 0; i < s; i++){
-    //     if (src[i] != 0) {
-    //         _hash += (i + src[i]) % s;
-    //         std::cout << "bb    " << _hash << std::endl;
-    //     }
-    // }
-    // std::cout << "cc    " << _hash << std::endl;
+void                    Node::setH(float h) {_h = h;}
 
+void                    Node::setHash(std::vector<int> src){
+    uint64_t         s = src.size();
     for(auto& i : src) {
         s ^= i + 0x9e3779b9 + (s << 6) + (s >> 2);
     }
     _hash = s;
-    // std::cout << _hash << "     t \n";
 }
 
-void    Node::print() {
+float                   Node::getF() const {return (_g + _h);}
+
+int                     Node::getG() const {return _g;}
+
+float                   Node::getH() const {return _h;}
+
+int                     Node::getSize() const {return _size;}
+
+uint64_t                Node::getHash() const {return _hash;}
+
+Node*                   Node::getParent() const {return _parent;}
+
+std::vector<int>        Node::getPuzzle() const {return _puzzle;}
+
+xy&                     Node::getEmptyPiece() {return _coordinates;}
+
+void                    Node::swapGrid(Node & src, int swapi) {
+    xy coordinates = src._coordinates;
+    _puzzle = src._puzzle;
+    _puzzle[coordinates.i] = _puzzle[swapi];
+    _puzzle[swapi] = 0;
+    _coordinates.x = swapi % _size;
+    _coordinates.y = swapi / _size;
+    _coordinates.i = swapi;
+    setHash(_puzzle);
+}
+
+void                    Node::print() {
     for (int i = 0; i < (_size * _size); i++) {
         if (i % _size == 0 && i != 0)
             std::cout << std::endl;
