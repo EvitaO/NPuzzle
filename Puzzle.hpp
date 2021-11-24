@@ -7,7 +7,16 @@
 #include <queue>
 #include <memory>
 #include <cmath>
+#include <cstdlib>
 
+#define manhattan   (1 << 0)
+#define euclidean   (1 << 1)
+#define misplaced   (1 << 2)
+#define greedy      (1 << 3)
+#define uniform     (1 << 4)
+#define astar       (1 << 5)
+//  |=      aanzetten
+//   x& manhatten      check of aan is
 struct        Options {
     int   heuristic;
     int   search;
@@ -28,8 +37,14 @@ struct        CompareF {
 class Puzzle {
     
     public:
-        Puzzle(int size, Options input);
+        Puzzle(int s, Options input);
         ~Puzzle();
+
+        void        setStart(Node &src);
+        void        controlSolvabilty(Node &start);
+
+
+        void        solve();
 
         void        addToList(Node &src);
         void        setupChild(Node &src, int newpos);
@@ -46,6 +61,7 @@ class Puzzle {
         std::priority_queue<Node*, std::vector<Node*>, CompareF >&      getOpenList();
         std::deque<std::unique_ptr<Node> >                              getAllList();
 
+        void        printSolution(Node &tmp, int *moves);
 
     private:
 

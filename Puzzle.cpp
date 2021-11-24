@@ -1,4 +1,5 @@
 #include "Puzzle.hpp"
+#include "utils.hpp"
 
 Puzzle::Puzzle() {}
 
@@ -10,6 +11,35 @@ Puzzle::Puzzle(int s, Options input) {
 }
 
 Puzzle::~Puzzle() {
+}
+
+void        Puzzle::setStart(Node &src){
+    controlSolvabilty(src);
+    calculateHeuristic(src);
+    _openlist.push(&src);
+    _closedlist.insert(std::make_pair(src.getHash(), 0));
+}
+
+void        Puzzle::solve(){
+    int i = 0;
+    int moves = 0;
+    while (!(_openlist.empty())) {
+        i++;
+        Node *tmp = (_openlist.top());
+        if (isGoal(*tmp)){
+            printSolution(*tmp, &moves);
+            std::cout << "Number of moves: " << moves << std::endl;
+            std::cout << "Time complexity: " << i << std::endl;
+            std::cout << "Size complexity: " << _allNodes.size() << std::endl;
+            std::cout << _openlist.size() << std::endl;
+            std::cout << _closedlist.size() << std::endl;
+            exit(EXIT_SUCCESS);
+        }     
+        _openlist.pop();
+        addToList(*tmp);
+    }
+    exit(EXIT_FAILURE);
+
 }
 
 void        Puzzle::setupChild(Node &src, int newpos){
@@ -133,6 +163,32 @@ void        Puzzle::calculateManhattan(Node &n){
     }
 }
 
+void        Puzzle::controlSolvabilty(Node &start){
+    std::vector<int>    goal;
+    goal.resize(_size*_size);
+    for (int i = 1; i < (_size*_size); i++){
+        int x = _goal[i].x;
+        int y = _goal[i].y;
+        int index = y *_size + x;
+        goal[index] = i; 
+    }
+    int goal_inversion = calculateInversions(goal, _size);
+    std::cout << "---------------\n";
+    int start_inversion = calculateInversions(start.getPuzzle(), _size);
+    std::cout << goal_inversion << std::endl;
+    std::cout << "---------------\n";
+    std::cout << start_inversion << std::endl;
+    // if (goal_inversion % 2 != start_inversion % 2)
+    //     throw std::runtime_error("Puzzle is unsolvable");
+
+    if (_size % 2 == 0){
+        if ((_size - start.getEmptyPiece().y) % 2 == 0 && start_inversion % 2 != 0)
+            throw std::runtime_error("Puzzle is unsolvable");
+    }
+    else if (start_inversion % 2 != 0)
+        throw std::runtime_error("Puzzle is unsolvable");
+}
+
 void        Puzzle::setGoal(){
     xy coordinates;
     coordinates.x = 0;
@@ -189,4 +245,13 @@ std::priority_queue<Node*, std::vector<Node*>, CompareF >&      Puzzle::getOpenL
 
 std::deque<std::unique_ptr<Node> >                              Puzzle::getAllList(){
     return std::move(_allNodes);
+}
+
+void            Puzzle::printSolution(Node &tmp, int *moves){
+    if (tmp.getParent() != NULL){
+        (*moves)++;
+        printSolution(*(tmp.getParent()), moves);
+    }
+    tmp.print();
+    std::cout << "---------------------\n";
 }

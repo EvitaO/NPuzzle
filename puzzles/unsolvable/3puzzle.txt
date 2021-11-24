@@ -1,5 +1,5 @@
 # This puzzle is unsolvable
 3
-4 8 5
-1 0 7
-6 3 2
+4 8 5    
+1 0 7     
+6 3 2      
