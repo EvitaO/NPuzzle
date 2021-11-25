@@ -38,10 +38,7 @@ int     main(int argc, char **argv){
             return 0;
         }
     }
-    // if (controlSolvabilty(&(*start)))
-        aStarAlgo(&(*start), chooseInput());
-    // else
-    //     std::cout << "Puzzle is unsolvable\n";
+    aStarAlgo(&(*start), chooseInput());
     }
     // while(1);
     return 0;

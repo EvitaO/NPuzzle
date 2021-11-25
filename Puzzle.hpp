@@ -9,14 +9,6 @@
 #include <cmath>
 #include <cstdlib>
 
-#define manhattan   (1 << 0)
-#define euclidean   (1 << 1)
-#define misplaced   (1 << 2)
-#define greedy      (1 << 3)
-#define uniform     (1 << 4)
-#define astar       (1 << 5)
-//  |=      aanzetten
-//   x& manhatten      check of aan is
 struct        Options {
     int   heuristic;
     int   search;
@@ -42,7 +34,7 @@ class Puzzle {
 
         void        setStart(Node &src);
         void        controlSolvabilty(Node &start);
-
+        int         manhattanZero(xy coordinates_start);
 
         void        solve();
 

@@ -38,6 +38,7 @@ void        Puzzle::solve(){
         _openlist.pop();
         addToList(*tmp);
     }
+    std::cout << "something wrong\n";
     exit(EXIT_FAILURE);
 
 }
@@ -163,29 +164,33 @@ void        Puzzle::calculateManhattan(Node &n){
     }
 }
 
-void        Puzzle::controlSolvabilty(Node &start){
-    std::vector<int>    goal;
-    goal.resize(_size*_size);
-    for (int i = 1; i < (_size*_size); i++){
-        int x = _goal[i].x;
-        int y = _goal[i].y;
-        int index = y *_size + x;
-        goal[index] = i; 
-    }
-    int goal_inversion = calculateInversions(goal, _size);
-    std::cout << "---------------\n";
-    int start_inversion = calculateInversions(start.getPuzzle(), _size);
-    std::cout << goal_inversion << std::endl;
-    std::cout << "---------------\n";
-    std::cout << start_inversion << std::endl;
-    // if (goal_inversion % 2 != start_inversion % 2)
-    //     throw std::runtime_error("Puzzle is unsolvable");
+int         Puzzle::manhattanZero(xy coordinates_start){
+    xy coordinates_goal = _goal[0];
 
-    if (_size % 2 == 0){
-        if ((_size - start.getEmptyPiece().y) % 2 == 0 && start_inversion % 2 != 0)
-            throw std::runtime_error("Puzzle is unsolvable");
+    return (abs(coordinates_start.x - coordinates_goal.x) + abs(coordinates_start.y - coordinates_goal.y));
+}
+
+void        Puzzle::controlSolvabilty(Node &start){
+    std::vector<int>    rowgoal;
+    rowgoal.resize(_size*_size);
+    for (int i = 1; i < (_size*_size); i++)
+        rowgoal[i - 1] = i;
+    rowgoal[_size*_size - 1] = 0;
+    std::vector<int>    rowstart;
+    rowstart.resize(_size*_size);
+    int y_zero;
+    std::vector<int>    init = start.getPuzzle();
+    for (int i = 0; i < _size*_size; i++){
+        int x = _goal[init[i]].x;
+        int y = _goal[init[i]].y;
+        int index = y *_size + x;
+        rowstart[i] = rowgoal[index];
+        if (rowstart[i] == 0)
+            y_zero = y;
     }
-    else if (start_inversion % 2 != 0)
+    int start_inversion = calculateInversions(rowstart, _size);
+    std::cout << manhattanZero(start.getEmptyPiece()) << std::endl;
+    if (start_inversion % 2 != manhattanZero(start.getEmptyPiece()) % 2)
         throw std::runtime_error("Puzzle is unsolvable");
 }
 
@@ -203,12 +208,22 @@ void        Puzzle::setGoal(){
         }
         for (coordinates.x--,coordinates.y++; coordinates.y < (_size - cnt) && val < (_size*_size); val++, coordinates.y++, coordinates.i++) {
             _goal[val] = coordinates;
+            if (val + 1 == _size*_size){
+                coordinates.x--;
+                _goal[0] = coordinates;
+                return;
+            }
         }
         for (coordinates.x--, coordinates.y--; coordinates.x >= (0 + cnt) && val < (_size*_size); val++, coordinates.x--, coordinates.i++) {
             _goal[val] = coordinates;
         }
         for (coordinates.y--, coordinates.x++; coordinates.y > (0 + cnt) && val < (_size*_size); val++, coordinates.y--, coordinates.i++) {
             _goal[val] = coordinates;
+            if (val + 1 == _size*_size){
+                coordinates.x++;
+                _goal[0] = coordinates;
+                return;
+            }
         }
         coordinates.y++;
         coordinates.x++;

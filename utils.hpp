@@ -26,10 +26,7 @@ int                     getSizePuzzle();
 Options                 chooseInput();
 
 //Functions to check if puzzle is solvable
-std::vector<int>        puzzleSnakeForm(Node *start, int size);
 int                     calculateInversions(std::vector<int> vec, int size);
-bool                    isSolvable(int inversions, int size, Node *start);
-bool                    controlSolvabilty(Node *start);
 
 
 #endif
