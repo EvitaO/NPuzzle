@@ -5,8 +5,6 @@
 #include <fstream>
 #include <sstream>
 #include <ctime>
-#include <cstdlib>
-#include <memory>
 
 //Functions to read file and control input
 std::unique_ptr<Node>   readfile(char *file);
@@ -22,10 +20,7 @@ std::unique_ptr<Node>   makeStartNode(std::vector<int> &tmp, int const size);
 std::unique_ptr<Node>   createPuzzle();
 int                     getSizePuzzle();
 
-//Choos search and heuristic
-Options                 chooseInput();
-
-//Functions to check if puzzle is solvable
+//Function to check amount of inversions in puzzle
 int                     calculateInversions(std::vector<int> vec, int size);
 
 

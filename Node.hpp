@@ -2,14 +2,18 @@
 #define NODE_HPP_
 
 #include <iostream>
-#include <iomanip>
 #include <vector>
+
+#define manhattan   (1 << 0)
+#define euclidean   (1 << 1)
+#define hamming     (1 << 2)
+#define greedy      (1 << 3)
+#define uniform     (1 << 4)
+#define astar       (1 << 5)
 
 struct        xy {
        int    x, y, i;
 };
-
-
 
 class Node{
  public:
@@ -21,7 +25,7 @@ class Node{
       Node &      operator=(Node const & src);
 
       void        setPuzzle(std::vector<int> &arr);
-      void        setParent(Node &parent, int searchtype);
+      void        setParent(Node &parent, char flag);
       void        setH(float h);
       void        setHash(std::vector<int> src);
       

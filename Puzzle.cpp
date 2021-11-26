@@ -3,10 +3,10 @@
 
 Puzzle::Puzzle() {}
 
-Puzzle::Puzzle(int s, Options input) {
+Puzzle::Puzzle(int s, char flag) {
     _size = s;
     _goal.resize(s*s);
-    _userinput = input;
+    _flags = flag;
     setGoal();
 }
 
@@ -31,16 +31,11 @@ void        Puzzle::solve(){
             std::cout << "Number of moves: " << moves << std::endl;
             std::cout << "Time complexity: " << i << std::endl;
             std::cout << "Size complexity: " << _allNodes.size() << std::endl;
-            std::cout << _openlist.size() << std::endl;
-            std::cout << _closedlist.size() << std::endl;
-            exit(EXIT_SUCCESS);
+            return ;
         }     
         _openlist.pop();
         addToList(*tmp);
     }
-    std::cout << "something wrong\n";
-    exit(EXIT_FAILURE);
-
 }
 
 void        Puzzle::setupChild(Node &src, int newpos){
@@ -49,7 +44,7 @@ void        Puzzle::setupChild(Node &src, int newpos){
     else{
         std::unique_ptr<Node> tmp = std::make_unique<Node>(Node(src.getSize()));
         tmp->swapGrid(src, newpos);
-        tmp->setParent(src, _userinput.search);
+        tmp->setParent(src, _flags);
         auto it = _closedlist.find(tmp->getHash());
         if (it == _closedlist.end()){
             calculateHeuristic(*tmp);
@@ -87,19 +82,19 @@ void        Puzzle::addToList(Node &src) {
 }
 
 void        Puzzle::calculateHeuristic(Node &n){
-    if (_userinput.search == 0 || _userinput.search == 1){
-        if (_userinput.heuristic == 0)
-            calculateManhattan(n);
-        if (_userinput.heuristic == 1)
+    if (!(_flags & uniform)){
+        if (_flags & euclidean)
             calculateEuclidean(n);
-        if (_userinput.heuristic == 2)
-            calculateMisplacedNodes(n);
+        else if (_flags & hamming)
+            calculateHamming(n);
+        else
+            calculateManhattan(n);
     }
     else
         n.setH(0);
 }
 
-void        Puzzle::calculateMisplacedNodes(Node &n){
+void        Puzzle::calculateHamming(Node &n){
     int h = 0;
     std::vector<int> grid = n.getPuzzle();
     if (n.getParent() != NULL && n.getParent()->getH() != 0){
@@ -170,26 +165,27 @@ int         Puzzle::manhattanZero(xy coordinates_start){
     return (abs(coordinates_start.x - coordinates_goal.x) + abs(coordinates_start.y - coordinates_goal.y));
 }
 
+std::vector<int>    Puzzle::convertPuzzle(std::vector<int> puzzle, std::vector<int> rowgoal){
+    std::vector<int>    convertPuzzle;
+    convertPuzzle.resize(_size*_size);
+
+    for (int i = 0; i < _size*_size; i++){
+        int x = _goal[puzzle[i]].x;
+        int y = _goal[puzzle[i]].y;
+        int index = y *_size + x;
+        convertPuzzle[i] = rowgoal[index];
+    }
+    return convertPuzzle;
+}
+
 void        Puzzle::controlSolvabilty(Node &start){
     std::vector<int>    rowgoal;
     rowgoal.resize(_size*_size);
     for (int i = 1; i < (_size*_size); i++)
         rowgoal[i - 1] = i;
     rowgoal[_size*_size - 1] = 0;
-    std::vector<int>    rowstart;
-    rowstart.resize(_size*_size);
-    int y_zero;
-    std::vector<int>    init = start.getPuzzle();
-    for (int i = 0; i < _size*_size; i++){
-        int x = _goal[init[i]].x;
-        int y = _goal[init[i]].y;
-        int index = y *_size + x;
-        rowstart[i] = rowgoal[index];
-        if (rowstart[i] == 0)
-            y_zero = y;
-    }
+    std::vector<int>    rowstart = convertPuzzle(start.getPuzzle(), rowgoal);
     int start_inversion = calculateInversions(rowstart, _size);
-    std::cout << manhattanZero(start.getEmptyPiece()) << std::endl;
     if (start_inversion % 2 != manhattanZero(start.getEmptyPiece()) % 2)
         throw std::runtime_error("Puzzle is unsolvable");
 }
@@ -232,11 +228,11 @@ void        Puzzle::setGoal(){
 }
 
 bool        Puzzle::isGoal(Node &n){
-    if (_userinput.search == 0 && n.getH() == 0)
+    if (!(_flags & greedy) && !(_flags & uniform) && n.getH() == 0)
         return true;
-    if (_userinput.search == 1 && n.getH() == 0)
+    if (_flags & greedy && n.getH() == 0)
         return true;
-    if (_userinput.search == 2){
+    if (_flags & uniform){
         std::vector<int> grid = n.getPuzzle();
         for (int i = 0; i < (_size*_size); i++){
             if (grid[i] != 0){

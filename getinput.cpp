@@ -31,23 +31,3 @@ int     getSizePuzzle(){
         throw std::runtime_error("");
     return size;
 }
-
-Options chooseInput(){
-    Options input;
-    int tmp = -1;
-
-    while (tmp < 0 || tmp > 2){
-        std::cout << "Which search method do you want to use: \n" << std::setw(8) << "0:" << "  A* algorithm\n" << std::setw(8) << "1:" << "  Greedy search\n" << std::setw(8) << "2:" << "  Uniform cost\n";
-        std::cin >> tmp;
-    }
-    input.search = tmp;
-    if (input.search == 2)
-        return input;
-    tmp = -1;
-    while (tmp < 0 || tmp > 2){
-        std::cout << "Which heuristic method do you want to use: \n" << std::setw(8) << "0:" << "  Manhattan\n" << std::setw(8) << "1:" << "  Euclidean\n" << std::setw(8) << "2:" << "  Misplaced pieces\n";
-        std::cin >> tmp;
-    }
-    input.heuristic = tmp;
-    return input;
-}

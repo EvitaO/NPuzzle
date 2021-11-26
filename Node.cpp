@@ -42,9 +42,9 @@ void                    Node::setPuzzle(std::vector<int> &arr) {
     setHash(_puzzle);
 }
 
-void                    Node::setParent(Node &parent, int searchtype){
+void                    Node::setParent(Node &parent, char flags){
     _parent = &parent;
-    if (searchtype != 1)
+    if (!(flags & greedy))
         _g = parent.getG() + 1;
 }
 
