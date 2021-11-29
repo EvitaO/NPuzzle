@@ -25,7 +25,7 @@ class Puzzle {
         ~Puzzle();
 
         void                setStart(Node &src);
-        void                controlSolvabilty(Node &start);
+        void                controlSolvability(Node &start);
         int                 manhattanZero(xy coordinates_start);
         std::vector<int>    convertPuzzle(std::vector<int> puzzle, std::vector<int> rowgoal);
 
@@ -34,7 +34,7 @@ class Puzzle {
         void        solve();
 
         void        addToList(Node &src);
-        void        setupChild(Node &src, int newpos);
+        void        setupChild(Node &src, int newpos, char direc);
 
         void        setGoal();
         bool        isGoal(Node &n);

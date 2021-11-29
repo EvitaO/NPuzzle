@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <iomanip>
 
 #define manhattan   (1 << 0)
 #define euclidean   (1 << 1)
@@ -10,6 +11,15 @@
 #define greedy      (1 << 3)
 #define uniform     (1 << 4)
 #define astar       (1 << 5)
+#define verbose     (1 << 6)
+
+#define CYAN    "\033[36m"
+#define MAGENTA "\033[35m"
+#define RED     "\033[31m"
+#define GREEN   "\033[32m"
+#define BOLDGREEN   "\033[1m\033[32m"
+#define RESET   "\033[0m"
+
 
 struct        xy {
        int    x, y, i;
@@ -28,7 +38,8 @@ class Node{
       void        setParent(Node &parent, char flag);
       void        setH(float h);
       void        setHash(std::vector<int> src);
-      
+      void        setDirec(char direc);
+
       float                 getF() const;
       int                   getG() const;
       float                 getH() const;
@@ -38,9 +49,11 @@ class Node{
       Node*                 getParent() const;
       std::vector<int>      getPuzzle() const;
       xy&                   getEmptyPiece();
+      char                  getDirec() const;
 
       void        swapGrid(Node &src, int swapi);
       void        print();
+      void        printverbose();
           
  private:
        int     _g;
@@ -51,6 +64,7 @@ class Node{
        std::vector<int>  _puzzle;
        xy                _coordinates;
        uint64_t          _hash;
+       char              _direc;
 };
 
 #endif

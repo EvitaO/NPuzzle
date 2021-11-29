@@ -14,7 +14,7 @@ Puzzle::~Puzzle() {
 }
 
 void        Puzzle::setStart(Node &src){
-    controlSolvabilty(src);
+    controlSolvability(src);
     calculateHeuristic(src);
     _openlist.push(&src);
     _closedlist.insert(std::make_pair(src.getHash(), 0));
@@ -26,11 +26,13 @@ void        Puzzle::solve(){
     while (!(_openlist.empty())) {
         i++;
         Node *tmp = (_openlist.top());
+        if (_flags & verbose)
+            tmp->printverbose();
         if (isGoal(*tmp)){
             printSolution(*tmp, &moves);
-            std::cout << "Number of moves: " << moves << std::endl;
-            std::cout << "Time complexity: " << i << std::endl;
-            std::cout << "Size complexity: " << _allNodes.size() << std::endl;
+            std::cout << CYAN << "Number of moves: " << moves << RESET << std::endl;
+            std::cout << CYAN << "Time complexity: " << i << RESET << std::endl;
+            std::cout << CYAN << "Size complexity: " << _allNodes.size() << RESET << std::endl;
             return ;
         }     
         _openlist.pop();
@@ -38,13 +40,14 @@ void        Puzzle::solve(){
     }
 }
 
-void        Puzzle::setupChild(Node &src, int newpos){
+void        Puzzle::setupChild(Node &src, int newpos, char direc){
     if (src.getParent() != NULL && src.getParent()->getEmptyPiece().i == newpos)
         return;
     else{
         std::unique_ptr<Node> tmp = std::make_unique<Node>(Node(src.getSize()));
         tmp->swapGrid(src, newpos);
         tmp->setParent(src, _flags);
+        tmp->setDirec(direc);
         auto it = _closedlist.find(tmp->getHash());
         if (it == _closedlist.end()){
             calculateHeuristic(*tmp);
@@ -66,19 +69,19 @@ void        Puzzle::addToList(Node &src) {
     //MOVE RIGHT
     if (current.i % _size != _size-1){
         if (current.i+1 >= 0 && current.i+1 < (_size*_size))
-            setupChild(src, current.i+1);
+            setupChild(src, current.i+1, 'R');
     }
     //MOVE LEFT      
     if (current.i % _size != 0){
         if (current.i-1 >= 0 && current.i-1 < (_size*_size))
-            setupChild(src, current.i-1);
+            setupChild(src, current.i-1, 'L');
     }
     //MOVE UP
     if (current.i-_size >= 0 && current.i-_size < (_size*_size))
-        setupChild(src, current.i-_size);
+        setupChild(src, current.i-_size, 'U');
     //MOVE DOWN
     if (current.i+_size >= 0 && (current.i+_size) < (_size*_size))
-        setupChild(src, current.i+_size);
+        setupChild(src, current.i+_size, 'D');
 }
 
 void        Puzzle::calculateHeuristic(Node &n){
@@ -178,7 +181,7 @@ std::vector<int>    Puzzle::convertPuzzle(std::vector<int> puzzle, std::vector<i
     return convertPuzzle;
 }
 
-void        Puzzle::controlSolvabilty(Node &start){
+void        Puzzle::controlSolvability(Node &start){
     std::vector<int>    rowgoal;
     rowgoal.resize(_size*_size);
     for (int i = 1; i < (_size*_size); i++)
@@ -264,5 +267,4 @@ void            Puzzle::printSolution(Node &tmp, int *moves){
         printSolution(*(tmp.getParent()), moves);
     }
     tmp.print();
-    std::cout << "---------------------\n";
 }
