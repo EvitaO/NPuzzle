@@ -44,10 +44,6 @@ class Puzzle {
         void        calculateHamming(Node &n);
         void        calculateEuclidean(Node &n);
 
-        std::unordered_map<uint64_t, int>&                              getClosedList();
-        std::priority_queue<Node*, std::vector<Node*>, CompareF >&      getOpenList();
-        std::deque<std::unique_ptr<Node> >                              getAllList();
-
         void        printSolution(Node &tmp, int *moves);
 
     private:

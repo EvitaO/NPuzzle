@@ -1,7 +1,4 @@
-//  Copyright 2021 <eovertoo>
-
 #include "utils.hpp"
-#include <chrono>
 
 void    aStarAlgo(Node *start, char flag){
     Puzzle  puzzle(start->getSize(), flag);
@@ -10,7 +7,7 @@ void    aStarAlgo(Node *start, char flag){
         puzzle.solve();
     }
     catch(std::exception &e){
-        std::cout << RED << e.what() << RESET << std::endl;
+        std::cerr << RED << e.what() << RESET << std::endl;
     }
 }
 
@@ -36,43 +33,43 @@ std::string    flags(char &flag, char **argv, int argc){
         if (argv[i][0] == '-' && std::strlen(argv[i]) == 2){
         switch(argv[i][1]){
             case 'm':
-                if (flag & euclidean || flag & hamming)
+                if (flag & EUCLIDEAN || flag & HAMMING)
                     throw std::runtime_error("\nIncorrect format used");
                 else
-                    flag |= manhattan;
+                    flag |= MANHATTAN;
                 break;
             case 'e':
-                if (flag & manhattan || flag & hamming)
+                if (flag & MANHATTAN || flag & HAMMING)
                     throw std::runtime_error("\nIncorrect format used");
                 else
-                    flag |= euclidean;
+                    flag |= EUCLIDEAN;
                 break;
             case 'h':
-                if (flag & manhattan || flag & euclidean)
+                if (flag & MANHATTAN || flag & EUCLIDEAN)
                     throw std::runtime_error("\nIncorrect format used");
                 else
-                    flag |= hamming;
+                    flag |= HAMMING;
                 break;
             case 'u':
-                if (flag & astar || flag & greedy)
+                if (flag & ASTAR || flag & GREEDY)
                     throw std::runtime_error("\nIncorrect format used");
                 else
-                    flag |= uniform;
+                    flag |= UNIFORM;
                 break;
             case 'g':
-                if (flag & astar || flag & uniform)
+                if (flag & ASTAR || flag & UNIFORM)
                     throw std::runtime_error("\nIncorrect format used");
                 else
-                    flag |= greedy;
+                    flag |= GREEDY;
                 break;
             case 'a':
-                if (flag & greedy || flag & uniform)
+                if (flag & GREEDY || flag & UNIFORM)
                     throw std::runtime_error("\nIncorrect format used");
                 else
-                    flag |= astar;
+                    flag |= ASTAR;
                 break;
             case 'v':
-                flag |= verbose;
+                flag |= VERBOSE;
                 break;
             default:
                 throw std::runtime_error("\nIncorrect argument used");
@@ -89,11 +86,10 @@ std::string    flags(char &flag, char **argv, int argc){
 
 int     main(int argc, char **argv){
     auto begin_time = std::chrono::steady_clock::now();
-    std::unique_ptr<Node> start; 
-    {
+    std::unique_ptr<Node> start;
     if (argc > 5){
         help();
-        std::cout << RED << "\nInvalid input\n" << RESET;
+        std::cerr << RED << "\nInvalid input\n" << RESET;
         return 0;
     }
     char flag;
@@ -103,7 +99,7 @@ int     main(int argc, char **argv){
     }
     catch(std::exception &e){
         help();
-        std::cout << RED << e.what() << RESET << std::endl;
+        std::cerr << RED << e.what() << RESET << std::endl;
         return 0;
     }
     if (file == ""){
@@ -111,29 +107,27 @@ int     main(int argc, char **argv){
             start = createPuzzle();
         }
         catch(std::exception &e){
-            std::cout << RED << "Invalid size\n" << RESET;
+            std::cerr << RED << "Invalid size\n" << RESET;
             return 0;
         }
     }
     else {
         if (std::strlen(file.c_str()) < std::strlen(".txt") || file.compare(std::strlen(file.c_str()) - std::strlen(".txt"), std::strlen(".txt"), ".txt") != 0){
             help();
-            std::cout << RED << "\nInvalid file\n" << RESET;
+            std::cerr << RED << "\nInvalid file\n" << RESET;
             return 0;
         }   
         try{
             start = readfile(argv[1]);
         }
         catch(std::exception &e){
-            std::cout << RED << "Invald input file\n" << RESET;
+            std::cerr << RED << "Invald file\n" << RESET;
             return 0;
         }
     }
     aStarAlgo(&(*start), flag);
-    }
     auto end_time = std::chrono::steady_clock::now();
     std::chrono::duration<double> elapsed_seconds = end_time - begin_time;
     std::cout << CYAN << "Elapsed time: " << elapsed_seconds.count() << "s\n" << RESET;
-    // while(1);
     return 0;
 }

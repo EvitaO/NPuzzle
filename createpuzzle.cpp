@@ -21,6 +21,8 @@ int     getSizePuzzle(){
     std::cout << "give the size of a puzzle (>= 3 && <= 20)\n";
     std::cin >> input;
 
+    if (std::cin.eof())
+        exit(EXIT_FAILURE);
     for (int i = 0; i < std::strlen(input.c_str()); i++)
     {
         if (!isdigit(input[i]))

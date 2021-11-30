@@ -5,20 +5,20 @@
 #include <vector>
 #include <iomanip>
 
-#define manhattan   (1 << 0)
-#define euclidean   (1 << 1)
-#define hamming     (1 << 2)
-#define greedy      (1 << 3)
-#define uniform     (1 << 4)
-#define astar       (1 << 5)
-#define verbose     (1 << 6)
+#define MANHATTAN   (1 << 0)
+#define EUCLIDEAN   (1 << 1)
+#define HAMMING     (1 << 2)
+#define GREEDY      (1 << 3)
+#define UNIFORM     (1 << 4)
+#define ASTAR       (1 << 5)
+#define VERBOSE     (1 << 6)
 
-#define CYAN    "\033[36m"
-#define MAGENTA "\033[35m"
-#define RED     "\033[31m"
-#define GREEN   "\033[32m"
+#define CYAN        "\033[36m"
+#define MAGENTA     "\033[35m"
+#define RED         "\033[31m"
+#define GREEN       "\033[32m"
 #define BOLDGREEN   "\033[1m\033[32m"
-#define RESET   "\033[0m"
+#define RESET       "\033[0m"
 
 
 struct        xy {
@@ -49,7 +49,6 @@ class Node{
       Node*                 getParent() const;
       std::vector<int>      getPuzzle() const;
       xy&                   getEmptyPiece();
-      char                  getDirec() const;
 
       void        swapGrid(Node &src, int swapi);
       void        print();

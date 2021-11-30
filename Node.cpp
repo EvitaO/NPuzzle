@@ -48,7 +48,7 @@ void                    Node::setPuzzle(std::vector<int> &arr) {
 
 void                    Node::setParent(Node &parent, char flags){
     _parent = &parent;
-    if (!(flags & greedy))
+    if (!(flags & GREEDY))
         _g = parent.getG() + 1;
 }
 
@@ -79,8 +79,6 @@ Node*                   Node::getParent() const {return _parent;}
 std::vector<int>        Node::getPuzzle() const {return _puzzle;}
 
 xy&                     Node::getEmptyPiece() {return _coordinates;}
-
-char                    Node::getDirec() const {return _direc;}
 
 void                    Node::swapGrid(Node & src, int swapi) {
     xy coordinates = src._coordinates;

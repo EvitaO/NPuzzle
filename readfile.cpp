@@ -68,7 +68,7 @@ std::unique_ptr<Node>    readfile(char *file){
         }
         f.close();
     }
-    if (!(controlPuzzle(tmp, size)))
+    if (size == 0 || size == 2 || !(controlPuzzle(tmp, size)))
         throw std::runtime_error("");
     return makeStartNode(tmp, size);
 }

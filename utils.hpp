@@ -6,6 +6,7 @@
 #include <sstream>
 #include <ctime>
 #include <iostream>
+#include <chrono>
 
 //Functions to read file and control input
 std::unique_ptr<Node>   readfile(char *file);

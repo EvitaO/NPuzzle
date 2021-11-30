@@ -26,13 +26,13 @@ void        Puzzle::solve(){
     while (!(_openlist.empty())) {
         i++;
         Node *tmp = (_openlist.top());
-        if (_flags & verbose)
+        if (_flags & VERBOSE)
             tmp->printverbose();
         if (isGoal(*tmp)){
             printSolution(*tmp, &moves);
             std::cout << CYAN << "Number of moves: " << moves << RESET << std::endl;
             std::cout << CYAN << "Time complexity: " << i << RESET << std::endl;
-            std::cout << CYAN << "Size complexity: " << _allNodes.size() << RESET << std::endl;
+            std::cout << CYAN << "Size complexity: " << _allNodes.size() + 1 << RESET << std::endl;
             return ;
         }     
         _openlist.pop();
@@ -85,10 +85,10 @@ void        Puzzle::addToList(Node &src) {
 }
 
 void        Puzzle::calculateHeuristic(Node &n){
-    if (!(_flags & uniform)){
-        if (_flags & euclidean)
+    if (!(_flags & UNIFORM)){
+        if (_flags & EUCLIDEAN)
             calculateEuclidean(n);
-        else if (_flags & hamming)
+        else if (_flags & HAMMING)
             calculateHamming(n);
         else
             calculateManhattan(n);
@@ -231,11 +231,11 @@ void        Puzzle::setGoal(){
 }
 
 bool        Puzzle::isGoal(Node &n){
-    if (!(_flags & greedy) && !(_flags & uniform) && n.getH() == 0)
+    if (!(_flags & GREEDY) && !(_flags & UNIFORM) && n.getH() == 0)
         return true;
-    if (_flags & greedy && n.getH() == 0)
+    if (_flags & GREEDY && n.getH() == 0)
         return true;
-    if (_flags & uniform){
+    if (_flags & UNIFORM){
         std::vector<int> grid = n.getPuzzle();
         for (int i = 0; i < (_size*_size); i++){
             if (grid[i] != 0){
@@ -247,18 +247,6 @@ bool        Puzzle::isGoal(Node &n){
         return true;
     }
     return false;
-}
-
-std::unordered_map<uint64_t, int>&                              Puzzle::getClosedList() {
-    return _closedlist;
-}
-
-std::priority_queue<Node*, std::vector<Node*>, CompareF >&      Puzzle::getOpenList() {
-    return _openlist;
-}
-
-std::deque<std::unique_ptr<Node> >                              Puzzle::getAllList(){
-    return std::move(_allNodes);
 }
 
 void            Puzzle::printSolution(Node &tmp, int *moves){

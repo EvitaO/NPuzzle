@@ -22,5 +22,3 @@ set(SOURCES
 add_executable(${BINARY} ${SOURCES})
 add_subdirectory(test)
 add_library(${BINARY}_lib STATIC ${SOURCES})
-
-# target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC ${CMAKE_PROJECT_NAME}_lib gtest)
